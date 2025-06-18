@@ -1,11 +1,12 @@
-// src/screens/dashboard/DashboardScreen.js - ACTUALIZADO
+// src/screens/dashboard/DashboardScreen.js - CON DATOS REALES
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, Button, Loading } from '../../components/ui';
+import { Card, Button } from '../../components/ui';
 import { Header } from '../../components/layout';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useAuthStore } from '../../stores';
+
 const DashboardScreen = ({ navigation }) => {
   const theme = useTheme();
   const { user } = useAuthStore();
@@ -24,6 +25,7 @@ const DashboardScreen = ({ navigation }) => {
   const loadDashboardData = async () => {
     try {
       console.log('Cargando datos del dashboard...');
+      // TODO: Conectar con API real para estadísticas
     } catch (error) {
       console.error('Error cargando dashboard:', error);
     }
@@ -39,6 +41,19 @@ const DashboardScreen = ({ navigation }) => {
     navigation.navigate(section);
   };
 
+  // 🎯 Calcular información del usuario
+  const getUserInfo = () => {
+    if (!user) return { name: 'Visitador', route: 'Sin ruta', initials: 'V' };
+    
+    const name = user.nombre_completo || 'Visitador';
+    const route = user.ruta?.nombre || 'Sin ruta asignada';
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    
+    return { name, route, initials };
+  };
+
+  const { name, route, initials } = getUserInfo();
+
   const styles = {
     container: {
       flex: 1,
@@ -51,8 +66,50 @@ const DashboardScreen = ({ navigation }) => {
       paddingHorizontal: theme.spacing[5],
       paddingVertical: theme.spacing[6],
     },
+    
+    // 🎨 User Info Card
+    userCard: {
+      marginBottom: theme.spacing[6],
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: theme.spacing[5],
+    },
+    avatar: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      backgroundColor: theme.colors.primary[500],
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: theme.spacing[4],
+    },
+    avatarText: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: theme.colors.text.inverse,
+    },
+    userInfo: {
+      flex: 1,
+    },
+    userName: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[1],
+    },
+    userRoute: {
+      fontSize: 14,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing[1],
+    },
+    userPhone: {
+      fontSize: 12,
+      color: theme.colors.text.tertiary,
+    },
+    
     sectionTitle: {
-      ...theme.typography.styles.h3,
+      fontSize: 20,
+      fontWeight: '600',
       color: theme.colors.text.primary,
       marginBottom: theme.spacing[4],
     },
@@ -71,13 +128,13 @@ const DashboardScreen = ({ navigation }) => {
       marginBottom: theme.spacing[4],
     },
     statNumber: {
-      ...theme.typography.styles.h2,
-      color: theme.colors.primary[500],
+      fontSize: 24,
       fontWeight: 'bold',
+      color: theme.colors.primary[500],
       marginBottom: theme.spacing[2],
     },
     statLabel: {
-      ...theme.typography.styles.caption,
+      fontSize: 12,
       color: theme.colors.text.secondary,
       textAlign: 'center',
     },
@@ -99,12 +156,12 @@ const DashboardScreen = ({ navigation }) => {
       borderBottomColor: theme.colors.border.light,
     },
     activityText: {
-      ...theme.typography.styles.body,
+      fontSize: 16,
       color: theme.colors.text.primary,
       flex: 1,
     },
     activityTime: {
-      ...theme.typography.styles.caption,
+      fontSize: 12,
       color: theme.colors.text.tertiary,
     },
   };
@@ -113,7 +170,7 @@ const DashboardScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Header 
         title="Dashboard"
-        subtitle={`Bienvenido, ${user?.name || 'Visitador'}`}
+        subtitle="Bienvenido de vuelta"
         variant="default"
       />
       
@@ -125,6 +182,21 @@ const DashboardScreen = ({ navigation }) => {
         }
         showsVerticalScrollIndicator={false}
       >
+        {/* 👤 User Info Card */}
+        <Card variant="elevated" style={styles.userCard}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initials}</Text>
+          </View>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{name}</Text>
+            <Text style={styles.userRoute}>📍 {route}</Text>
+            {user?.telefono && (
+              <Text style={styles.userPhone}>📞 {user.telefono}</Text>
+            )}
+          </View>
+        </Card>
+
+        {/* 📊 Stats Cards */}
         <View style={styles.statsContainer}>
           <Text style={styles.sectionTitle}>Resumen de Actividad</Text>
           
@@ -151,6 +223,7 @@ const DashboardScreen = ({ navigation }) => {
           </View>
         </View>
 
+        {/* ⚡ Quick Actions */}
         <View style={styles.actionsContainer}>
           <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
           
@@ -184,6 +257,7 @@ const DashboardScreen = ({ navigation }) => {
           </Card>
         </View>
 
+        {/* 📋 Recent Activity */}
         <View style={styles.activityContainer}>
           <Text style={styles.sectionTitle}>Actividad Reciente</Text>
           
