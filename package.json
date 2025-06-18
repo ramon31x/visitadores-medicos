@@ -1,0 +1,37 @@
+{
+  "name": "visitadores-medicos",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/netinfo": "11.4.1",
+    "@react-navigation/bottom-tabs": "^7.3.15",
+    "@react-navigation/native": "^7.1.11",
+    "@react-navigation/native-stack": "^7.3.16",
+    "axios": "^1.10.0",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
+    "expo": "~53.0.11",
+    "expo-location": "~18.1.5",
+    "expo-status-bar": "~2.2.3",
+    "react": "19.0.0",
+    "react-hook-form": "^7.58.0",
+    "react-native": "0.79.3",
+    "react-native-reanimated": "^3.18.0",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.11.1",
+    "react-native-signature-canvas": "^4.7.4",
+    "react-native-svg": "^15.12.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
+}
