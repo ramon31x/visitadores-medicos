@@ -1,7 +1,7 @@
-// src/components/layout/Header/index.js
+// src/components/layout/Header/index.js - ACTUALIZADO
 import React from 'react';
 import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
-import { theme } from '../../../theme';
+import { useTheme } from '../../../theme/ThemeProvider';
 import styles from './styles';
 
 const Header = ({
@@ -15,7 +15,8 @@ const Header = ({
   style,
   ...props
 }) => {
-  const headerStyles = styles.getHeaderStyles(variant);
+  const theme = useTheme();
+  const headerStyles = styles.getHeaderStyles(variant, theme);
 
   return (
     <>
@@ -24,24 +25,24 @@ const Header = ({
         backgroundColor={headerStyles.backgroundColor} 
       />
       <View style={[headerStyles, style]} {...props}>
-        <View style={styles.content}>
+        <View style={styles.content(theme)}>
           {leftIcon && (
             <TouchableOpacity 
               onPress={onLeftPress}
-              style={styles.iconButton}
+              style={styles.iconButton(theme)}
             >
               {leftIcon}
             </TouchableOpacity>
           )}
           
-          <View style={styles.titleContainer}>
+          <View style={styles.titleContainer(theme)}>
             {title && (
-              <Text style={styles.title} numberOfLines={1}>
+              <Text style={styles.title(theme)} numberOfLines={1}>
                 {title}
               </Text>
             )}
             {subtitle && (
-              <Text style={styles.subtitle} numberOfLines={1}>
+              <Text style={styles.subtitle(theme)} numberOfLines={1}>
                 {subtitle}
               </Text>
             )}
@@ -50,7 +51,7 @@ const Header = ({
           {rightIcon && (
             <TouchableOpacity 
               onPress={onRightPress}
-              style={styles.iconButton}
+              style={styles.iconButton(theme)}
             >
               {rightIcon}
             </TouchableOpacity>

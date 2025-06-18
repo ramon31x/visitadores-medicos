@@ -1,17 +1,63 @@
-// src/screens/profile/ProfileScreen.js
+// src/screens/profile/ProfileScreen.js - ACTUALIZADO
 import React from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Button } from '../../components/ui';
 import { Header } from '../../components/layout';
-import { theme } from '../../theme';
-import { useAuthStore } from '../../stores/authStore';
+import { useTheme } from '../../theme/ThemeProvider';
+import { useAuthStore } from '../../stores';
 
 const ProfileScreen = ({ navigation }) => {
+  const theme = useTheme();
   const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
+  };
+
+  const styles = {
+    container: {
+      flex: 1, 
+      backgroundColor: theme.colors.surface.secondary
+    },
+    content: {
+      flex: 1, 
+      padding: theme.spacing[5], 
+      justifyContent: 'center'
+    },
+    card: {
+      alignItems: 'center'
+    },
+    emoji: {
+      fontSize: 60, 
+      marginBottom: theme.spacing[6]
+    },
+    title: {
+      ...theme.typography.styles.h2,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[2],
+      textAlign: 'center'
+    },
+    subtitle: {
+      ...theme.typography.styles.body,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing[6],
+      textAlign: 'center'
+    },
+    description: {
+      ...theme.typography.styles.body,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+      lineHeight: 22,
+      marginBottom: theme.spacing[8]
+    },
+    buttonContainer: {
+      width: '100%',
+      paddingHorizontal: theme.spacing[4]
+    },
+    logoutButton: {
+      marginTop: theme.spacing[4]
+    }
   };
 
   return (
@@ -48,51 +94,6 @@ const ProfileScreen = ({ navigation }) => {
       </View>
     </SafeAreaView>
   );
-};
-
-const styles = {
-  container: {
-    flex: 1, 
-    backgroundColor: theme.colors.surface.secondary
-  },
-  content: {
-    flex: 1, 
-    padding: theme.spacing[5], 
-    justifyContent: 'center'
-  },
-  card: {
-    alignItems: 'center'
-  },
-  emoji: {
-    fontSize: 60, 
-    marginBottom: theme.spacing[6]
-  },
-  title: {
-    ...theme.typography.styles.h2,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[2],
-    textAlign: 'center'
-  },
-  subtitle: {
-    ...theme.typography.styles.body,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing[6],
-    textAlign: 'center'
-  },
-  description: {
-    ...theme.typography.styles.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: theme.spacing[8]
-  },
-  buttonContainer: {
-    width: '100%',
-    paddingHorizontal: theme.spacing[4]
-  },
-  logoutButton: {
-    marginTop: theme.spacing[4]
-  }
 };
 
 export default ProfileScreen;

@@ -1,4 +1,4 @@
-// src/theme/typography.js
+// src/theme/typography.js - COMPLETAMENTE CORREGIDO
 export const typography = {
   // 📐 Font Families (Android optimizado)
   fontFamily: {
@@ -23,85 +23,72 @@ export const typography = {
 
   // 📏 Line Heights - Respiración perfecta
   lineHeight: {
-    tight: 1.25,
-    snug: 1.375,
-    normal: 1.5,
-    relaxed: 1.625,
-    loose: 2
+    tight: 20,     // números absolutos en lugar de ratios
+    snug: 22,
+    normal: 24,
+    relaxed: 26,
+    loose: 32
   },
 
-  // 📝 Text Styles - Jerarquía completa (inspirado en Notion)
+  // 📝 Text Styles - SIMPLIFICADOS Y FUNCIONALES
   styles: {
     // Headers
     h1: {
       fontSize: 30,
-      fontFamily: 'Roboto-Bold',
-      lineHeight: 1.25,
-      color: colors.text.primary,
-      marginBottom: 24
+      fontWeight: 'bold',
+      color: '#1C1917'
     },
     h2: {
       fontSize: 24,
-      fontFamily: 'Roboto-Medium',
-      lineHeight: 1.25,
-      color: colors.text.primary,
-      marginBottom: 20
+      fontWeight: '600',
+      color: '#1C1917'
     },
     h3: {
       fontSize: 20,
-      fontFamily: 'Roboto-Medium',
-      lineHeight: 1.375,
-      color: colors.text.primary,
-      marginBottom: 16
+      fontWeight: '600',
+      color: '#1C1917'
     },
     h4: {
       fontSize: 18,
-      fontFamily: 'Roboto-Medium',
-      lineHeight: 1.375,
-      color: colors.text.primary,
-      marginBottom: 12
+      fontWeight: '500',
+      color: '#1C1917'
     },
 
     // Body Text
     bodyLarge: {
       fontSize: 18,
-      fontFamily: 'Roboto',
-      lineHeight: 1.5,
-      color: colors.text.primary
+      fontWeight: 'normal',
+      color: '#1C1917'
     },
     body: {
       fontSize: 16,
-      fontFamily: 'Roboto',
-      lineHeight: 1.5,
-      color: colors.text.primary
+      fontWeight: 'normal',
+      color: '#1C1917'
     },
     bodySmall: {
       fontSize: 14,
-      fontFamily: 'Roboto',
-      lineHeight: 1.375,
-      color: colors.text.secondary
+      fontWeight: 'normal',
+      color: '#44403C'
     },
 
     // Labels & Captions
     label: {
       fontSize: 14,
-      fontFamily: 'Roboto-Medium',
-      lineHeight: 1.375,
-      color: colors.text.primary
+      fontWeight: '500',
+      color: '#1C1917'
     },
     caption: {
       fontSize: 12,
-      fontFamily: 'Roboto',
-      lineHeight: 1.25,
-      color: colors.text.tertiary
+      fontWeight: 'normal',
+      color: '#78716C'
     },
 
     // Special
     button: {
       fontSize: 16,
-      fontFamily: 'Roboto-Medium',
-      lineHeight: 1.25,
-      textAlign: 'center'
+      fontWeight: '500',
+      textAlign: 'center',
+      color: '#FFFFFF'
     }
   }
 };

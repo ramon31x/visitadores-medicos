@@ -1,13 +1,13 @@
-// src/screens/dashboard/DashboardScreen.js
+// src/screens/dashboard/DashboardScreen.js - ACTUALIZADO
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Button, Loading } from '../../components/ui';
 import { Header } from '../../components/layout';
-import { theme } from '../../theme';
-import { useAuthStore } from '../../stores/authStore';
-
+import { useTheme } from '../../theme/ThemeProvider';
+import { useAuthStore } from '../../stores';
 const DashboardScreen = ({ navigation }) => {
+  const theme = useTheme();
   const { user } = useAuthStore();
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState({
@@ -23,8 +23,6 @@ const DashboardScreen = ({ navigation }) => {
 
   const loadDashboardData = async () => {
     try {
-      // TODO: Conectar con API real
-      // const response = await api.getStats();
       console.log('Cargando datos del dashboard...');
     } catch (error) {
       console.error('Error cargando dashboard:', error);
@@ -39,6 +37,76 @@ const DashboardScreen = ({ navigation }) => {
 
   const navigateToSection = (section) => {
     navigation.navigate(section);
+  };
+
+  const styles = {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.surface.secondary,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: theme.spacing[5],
+      paddingVertical: theme.spacing[6],
+    },
+    sectionTitle: {
+      ...theme.typography.styles.h3,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[4],
+    },
+    statsContainer: {
+      marginBottom: theme.spacing[8],
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    statCard: {
+      width: '48%',
+      alignItems: 'center',
+      paddingVertical: theme.spacing[6],
+      marginBottom: theme.spacing[4],
+    },
+    statNumber: {
+      ...theme.typography.styles.h2,
+      color: theme.colors.primary[500],
+      fontWeight: 'bold',
+      marginBottom: theme.spacing[2],
+    },
+    statLabel: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+    },
+    actionsContainer: {
+      marginBottom: theme.spacing[8],
+    },
+    actionButton: {
+      marginBottom: theme.spacing[3],
+    },
+    activityContainer: {
+      marginBottom: theme.spacing[6],
+    },
+    activityItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: theme.spacing[3],
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border.light,
+    },
+    activityText: {
+      ...theme.typography.styles.body,
+      color: theme.colors.text.primary,
+      flex: 1,
+    },
+    activityTime: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.tertiary,
+    },
   };
 
   return (
@@ -57,7 +125,6 @@ const DashboardScreen = ({ navigation }) => {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <Text style={styles.sectionTitle}>Resumen de Actividad</Text>
           
@@ -84,7 +151,6 @@ const DashboardScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Quick Actions */}
         <View style={styles.actionsContainer}>
           <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
           
@@ -118,7 +184,6 @@ const DashboardScreen = ({ navigation }) => {
           </Card>
         </View>
 
-        {/* Recent Activity */}
         <View style={styles.activityContainer}>
           <Text style={styles.sectionTitle}>Actividad Reciente</Text>
           
@@ -148,76 +213,6 @@ const DashboardScreen = ({ navigation }) => {
       </ScrollView>
     </SafeAreaView>
   );
-};
-
-const styles = {
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.surface.secondary,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: theme.spacing[5],
-    paddingVertical: theme.spacing[6],
-  },
-  sectionTitle: {
-    ...theme.typography.styles.h3,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[4],
-  },
-  statsContainer: {
-    marginBottom: theme.spacing[8],
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    width: '48%',
-    alignItems: 'center',
-    paddingVertical: theme.spacing[6],
-    marginBottom: theme.spacing[4],
-  },
-  statNumber: {
-    ...theme.typography.styles.h2,
-    color: theme.colors.primary[500],
-    fontWeight: 'bold',
-    marginBottom: theme.spacing[2],
-  },
-  statLabel: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing[8],
-  },
-  actionButton: {
-    marginBottom: theme.spacing[3],
-  },
-  activityContainer: {
-    marginBottom: theme.spacing[6],
-  },
-  activityItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: theme.spacing[3],
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border.light,
-  },
-  activityText: {
-    ...theme.typography.styles.body,
-    color: theme.colors.text.primary,
-    flex: 1,
-  },
-  activityTime: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.tertiary,
-  },
 };
 
 export default DashboardScreen;

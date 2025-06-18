@@ -1,41 +1,44 @@
-// src/components/layout/Header/styles.js
+// src/components/layout/Header/styles.js - ACTUALIZADO
 import { StatusBar } from 'react-native';
-import { theme } from '../../../theme';
 
 const styles = {
-  content: {
+  content: (theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: 44,
-  },
-  titleContainer: {
+  }),
+  
+  titleContainer: (theme) => ({
     flex: 1,
     marginHorizontal: theme.spacing[4],
     alignItems: 'center',
-  },
-  title: {
+  }),
+  
+  title: (theme) => ({
     ...theme.typography.styles.h4,
     color: theme.colors.text.primary,
     marginBottom: 0,
     textAlign: 'center',
-  },
-  subtitle: {
+  }),
+  
+  subtitle: (theme) => ({
     ...theme.typography.styles.caption,
     color: theme.colors.text.secondary,
     marginTop: theme.spacing[1],
     textAlign: 'center',
-  },
-  iconButton: {
+  }),
+  
+  iconButton: (theme) => ({
     padding: theme.spacing[2],
     borderRadius: theme.borderRadius.md,
     minWidth: 40,
     minHeight: 40,
     justifyContent: 'center',
     alignItems: 'center',
-  },
+  }),
 
-  getHeaderStyles: (variant) => {
+  getHeaderStyles: (variant, theme) => {
     const baseStyle = {
       paddingHorizontal: theme.spacing[5],
       paddingTop: StatusBar.currentHeight || theme.spacing[6],

@@ -1,4 +1,4 @@
-// src/components/ui/index.js - Export central actualizado
+// src/components/ui/index.js - ACTUALIZADO (Export central)
 export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as Input } from './Input';

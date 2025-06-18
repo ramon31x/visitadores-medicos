@@ -1,33 +1,79 @@
-// src/screens/auth/SplashScreen.js
+// src/screens/auth/SplashScreen.js - ACTUALIZADO
 import React, { useEffect } from 'react';
 import { View, Text, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Loading } from '../../components/ui';
-import { theme } from '../../theme';
-import { useAuthStore } from '../../stores/authStore';
+import { useTheme } from '../../theme/ThemeProvider';
+import { useAuthStore } from '../../stores';
 
 const SplashScreen = ({ navigation }) => {
-  const { checkAuthState, isLoading } = useAuthStore();
+  const theme = useTheme();
+
 
   useEffect(() => {
-    initializeApp();
+    console.log('📱 SplashScreen cargado');
   }, []);
-
-  const initializeApp = async () => {
-    try {
-      // Simular tiempo mínimo de splash para UX
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Verificar estado de autenticación
-      await checkAuthState();
-      
-      // La navegación se maneja automáticamente por el RootNavigator
-      // basado en el estado de autenticación
-    } catch (error) {
-      console.error('Error al inicializar la app:', error);
-      // En caso de error, ir al login
-      navigation.replace('Login');
-    }
+  const styles = {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.primary[500],
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing[6],
+      paddingVertical: theme.spacing[12],
+    },
+    logoContainer: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+    },
+    logoCircle: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      backgroundColor: theme.colors.text.inverse,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: theme.spacing[8],
+      ...theme.shadows.xl,
+    },
+    logoIcon: {
+      fontSize: 48,
+      textAlign: 'center',
+    },
+    appName: {
+      ...theme.typography.styles.h1,
+      color: theme.colors.text.inverse,
+      textAlign: 'center',
+      marginBottom: theme.spacing[3],
+      fontWeight: 'bold',
+    },
+    tagline: {
+      ...theme.typography.styles.bodyLarge,
+      color: theme.colors.primary[100],
+      textAlign: 'center',
+      maxWidth: 280,
+    },
+    loadingContainer: {
+      marginBottom: theme.spacing[8],
+    },
+    footer: {
+      alignItems: 'center',
+    },
+    footerText: {
+      ...theme.typography.styles.bodySmall,
+      color: theme.colors.primary[200],
+      textAlign: 'center',
+      marginBottom: theme.spacing[2],
+    },
+    versionText: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.primary[300],
+      fontSize: 11,
+    },
   };
 
   return (
@@ -38,7 +84,6 @@ const SplashScreen = ({ navigation }) => {
       />
       
       <View style={styles.content}>
-        {/* Logo Section */}
         <View style={styles.logoContainer}>
           <View style={styles.logoCircle}>
             <Text style={styles.logoIcon}>🏥</Text>
@@ -47,7 +92,6 @@ const SplashScreen = ({ navigation }) => {
           <Text style={styles.tagline}>Sistema de Gestión Médica</Text>
         </View>
 
-        {/* Loading Section */}
         <View style={styles.loadingContainer}>
           <Loading 
             size="large" 
@@ -56,7 +100,6 @@ const SplashScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             Profesional • Seguro • Confiable
@@ -66,69 +109,6 @@ const SplashScreen = ({ navigation }) => {
       </View>
     </SafeAreaView>
   );
-};
-
-const styles = {
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.primary[500],
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing[6],
-    paddingVertical: theme.spacing[12],
-  },
-  logoContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  logoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: theme.colors.text.inverse,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing[8],
-    ...theme.shadows.xl,
-  },
-  logoIcon: {
-    fontSize: 48,
-    textAlign: 'center',
-  },
-  appName: {
-    ...theme.typography.styles.h1,
-    color: theme.colors.text.inverse,
-    textAlign: 'center',
-    marginBottom: theme.spacing[3],
-    fontWeight: 'bold',
-  },
-  tagline: {
-    ...theme.typography.styles.bodyLarge,
-    color: theme.colors.primary[100],
-    textAlign: 'center',
-    maxWidth: 280,
-  },
-  loadingContainer: {
-    marginBottom: theme.spacing[8],
-  },
-  footer: {
-    alignItems: 'center',
-  },
-  footerText: {
-    ...theme.typography.styles.bodySmall,
-    color: theme.colors.primary[200],
-    textAlign: 'center',
-    marginBottom: theme.spacing[2],
-  },
-  versionText: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.primary[300],
-    fontSize: 11,
-  },
 };
 
 export default SplashScreen;

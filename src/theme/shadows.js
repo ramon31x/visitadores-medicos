@@ -1,8 +1,8 @@
-// src/theme/shadows.js
+// src/theme/shadows.js - CORREGIDO
 export const shadows = {
-  // 🌫️ Elevation system (inspirado en Linear/Figma)
+  // 🌫️ Elevation system (SIN referencias a colors)
   none: {
-    shadowColor: 'transparent',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0,
     shadowRadius: 0,
@@ -10,7 +10,7 @@ export const shadows = {
   },
 
   sm: {
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -18,7 +18,7 @@ export const shadows = {
   },
 
   md: {
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -26,7 +26,7 @@ export const shadows = {
   },
 
   lg: {
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -34,7 +34,7 @@ export const shadows = {
   },
 
   xl: {
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 16,
@@ -43,7 +43,7 @@ export const shadows = {
 
   // 🎨 Special shadows
   card: {
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -51,7 +51,7 @@ export const shadows = {
   },
 
   button: {
-    shadowColor: colors.primary[500],
+    shadowColor: '#0EA5E9', // Color directo en lugar de referencia
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -59,7 +59,7 @@ export const shadows = {
   },
 
   modal: {
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.25,
     shadowRadius: 25,

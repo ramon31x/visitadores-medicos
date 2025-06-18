@@ -1,19 +1,20 @@
-// src/screens/auth/LoginScreen.js
+// src/screens/auth/LoginScreen.js - ACTUALIZADO
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  KeyboardAvoidingView, 
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
   Alert,
-  StatusBar 
+  StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, Card } from '../../components/ui';
-import { theme } from '../../theme';
-import { useAuthStore } from '../../stores/authStore';
+import { useTheme } from '../../theme/ThemeProvider';
+import { useAuthStore } from '../../stores';
 
 const LoginScreen = ({ navigation }) => {
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -28,8 +29,7 @@ const LoginScreen = ({ navigation }) => {
       ...prev,
       [field]: value
     }));
-    
-    // Limpiar error cuando usuario empiece a escribir
+
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -59,14 +59,14 @@ const LoginScreen = ({ navigation }) => {
     if (!validateForm()) return;
 
     setLoading(true);
-    
+
     try {
-      const success = await login(formData.username, formData.password);
-      
-      if (success) {
-        // El navigation se maneja automáticamente por el RootNavigator
-        // cuando el estado de auth cambia
-      } else {
+      const success = await login({
+        username: formData.username,
+        password: formData.password
+      });
+
+      if (!success) {
         Alert.alert(
           'Error de Login',
           'Usuario o contraseña incorrectos. Intenta nuevamente.',
@@ -91,16 +91,95 @@ const LoginScreen = ({ navigation }) => {
     });
   };
 
+  const styles = {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.surface.secondary,
+    },
+    keyboardContainer: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      paddingHorizontal: theme.spacing[5],
+      paddingVertical: theme.spacing[8],
+    },
+    header: {
+      alignItems: 'center',
+      marginBottom: theme.spacing[10],
+    },
+    logoContainer: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: theme.colors.primary[500],
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: theme.spacing[6],
+      ...theme.shadows.lg,
+    },
+    logoIcon: {
+      fontSize: 36,
+      textAlign: 'center',
+    },
+    title: {
+      ...theme.typography.styles.h1,
+      textAlign: 'center',
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[3],
+    },
+    subtitle: {
+      ...theme.typography.styles.body,
+      textAlign: 'center',
+      color: theme.colors.text.secondary,
+      maxWidth: 280,
+      lineHeight: 22,
+    },
+    formCard: {
+      marginBottom: theme.spacing[8],
+    },
+    formTitle: {
+      ...theme.typography.styles.h3,
+      textAlign: 'center',
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[6],
+    },
+    buttonContainer: {
+      marginTop: theme.spacing[4],
+    },
+    loginButton: {
+      marginBottom: theme.spacing[4],
+    },
+    testButton: {
+      alignSelf: 'center',
+    },
+    footer: {
+      alignItems: 'center',
+      paddingTop: theme.spacing[6],
+    },
+    footerText: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.tertiary,
+      textAlign: 'center',
+      marginBottom: theme.spacing[2],
+    },
+    versionText: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.disabled,
+      fontSize: 11,
+    },
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.colors.surface.primary} />
-      
+
       <KeyboardAvoidingView style={styles.keyboardContainer} behavior="padding">
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header Section */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <Text style={styles.logoIcon}>🏥</Text>
@@ -111,10 +190,9 @@ const LoginScreen = ({ navigation }) => {
             </Text>
           </View>
 
-          {/* Login Form */}
           <Card variant="elevated" padding="lg" style={styles.formCard}>
             <Text style={styles.formTitle}>Iniciar Sesión</Text>
-            
+
             <Input
               label="Usuario"
               placeholder="Ingresa tu usuario"
@@ -150,7 +228,6 @@ const LoginScreen = ({ navigation }) => {
                 {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </Button>
 
-              {/* Test Credentials Button - Solo para desarrollo */}
               <Button
                 variant="ghost"
                 size="md"
@@ -163,7 +240,6 @@ const LoginScreen = ({ navigation }) => {
             </View>
           </Card>
 
-          {/* Footer */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Sistema de gestión médica profesional
@@ -176,86 +252,6 @@ const LoginScreen = ({ navigation }) => {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
-
-const styles = {
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.surface.secondary,
-  },
-  keyboardContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: theme.spacing[5],
-    paddingVertical: theme.spacing[8],
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: theme.spacing[10],
-  },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: theme.colors.primary[500],
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing[6],
-    ...theme.shadows.lg,
-  },
-  logoIcon: {
-    fontSize: 36,
-    textAlign: 'center',
-  },
-  title: {
-    ...theme.typography.styles.h1,
-    textAlign: 'center',
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[3],
-  },
-  subtitle: {
-    ...theme.typography.styles.body,
-    textAlign: 'center',
-    color: theme.colors.text.secondary,
-    maxWidth: 280,
-    lineHeight: 22,
-  },
-  formCard: {
-    marginBottom: theme.spacing[8],
-  },
-  formTitle: {
-    ...theme.typography.styles.h3,
-    textAlign: 'center',
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[6],
-  },
-  buttonContainer: {
-    marginTop: theme.spacing[4],
-  },
-  loginButton: {
-    marginBottom: theme.spacing[4],
-  },
-  testButton: {
-    alignSelf: 'center',
-  },
-  footer: {
-    alignItems: 'center',
-    paddingTop: theme.spacing[6],
-  },
-  footerText: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.tertiary,
-    textAlign: 'center',
-    marginBottom: theme.spacing[2],
-  },
-  versionText: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.disabled,
-    fontSize: 11,
-  },
 };
 
 export default LoginScreen;

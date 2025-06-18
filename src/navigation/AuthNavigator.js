@@ -1,29 +1,23 @@
-// src/navigation/AuthNavigator.js
+// src/navigation/AuthNavigator.js - CORREGIDO
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Screens
-import { LoginScreen, SplashScreen } from '../screens/auth';
+// Screens - SOLO IMPORTAR LOGIN
+import { LoginScreen } from '../screens/auth';
 
 const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Splash"
+      initialRouteName="Login" // ✅ CAMBIO AQUÍ
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
         gestureEnabled: true,
       }}
     >
-      <Stack.Screen 
-        name="Splash" 
-        component={SplashScreen}
-        options={{
-          animation: 'fade',
-        }}
-      />
+      {/* ❌ REMOVER SplashScreen completamente */}
       
       <Stack.Screen 
         name="Login" 

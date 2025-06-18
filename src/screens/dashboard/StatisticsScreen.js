@@ -1,12 +1,13 @@
-// src/screens/dashboard/StatisticsScreen.js
+// src/screens/dashboard/StatisticsScreen.js - ACTUALIZADO
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Button } from '../../components/ui';
 import { Header } from '../../components/layout';
-import { theme } from '../../theme';
+import { useTheme } from '../../theme/ThemeProvider';
 
 const StatisticsScreen = ({ navigation }) => {
+  const theme = useTheme();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
 
   const mockData = {
@@ -14,6 +15,87 @@ const StatisticsScreen = ({ navigation }) => {
     doctors: 12,
     forms: 18,
     efficiency: 92
+  };
+
+  const styles = {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.surface.secondary,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: theme.spacing[5],
+      paddingVertical: theme.spacing[6],
+    },
+    backIcon: {
+      fontSize: 20,
+      color: theme.colors.text.primary,
+    },
+    cardTitle: {
+      ...theme.typography.styles.h4,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[4],
+    },
+    periodCard: {
+      marginBottom: theme.spacing[6],
+    },
+    periodButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    periodButton: {
+      flex: 1,
+      marginHorizontal: theme.spacing[1],
+    },
+    overviewCard: {
+      marginBottom: theme.spacing[6],
+    },
+    overviewGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    overviewItem: {
+      width: '48%',
+      alignItems: 'center',
+      marginBottom: theme.spacing[4],
+    },
+    overviewNumber: {
+      ...theme.typography.styles.h2,
+      color: theme.colors.primary[500],
+      fontWeight: 'bold',
+    },
+    overviewLabel: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+      marginTop: theme.spacing[1],
+    },
+    chartCard: {
+      marginBottom: theme.spacing[6],
+    },
+    chartPlaceholder: {
+      height: 200,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.neutral[50],
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 2,
+      borderColor: theme.colors.border.light,
+      borderStyle: 'dashed',
+    },
+    placeholderText: {
+      ...theme.typography.styles.body,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing[2],
+    },
+    placeholderSubtext: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.tertiary,
+      textAlign: 'center',
+    },
   };
 
   return (
@@ -26,7 +108,6 @@ const StatisticsScreen = ({ navigation }) => {
       />
       
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Period Selector */}
         <Card variant="default" padding="md" style={styles.periodCard}>
           <Text style={styles.cardTitle}>Período</Text>
           <View style={styles.periodButtons}>
@@ -44,7 +125,6 @@ const StatisticsScreen = ({ navigation }) => {
           </View>
         </Card>
 
-        {/* Stats Overview */}
         <Card variant="elevated" padding="lg" style={styles.overviewCard}>
           <Text style={styles.cardTitle}>Resumen General</Text>
           
@@ -73,7 +153,6 @@ const StatisticsScreen = ({ navigation }) => {
           </View>
         </Card>
 
-        {/* Placeholder for Charts */}
         <Card variant="default" padding="lg" style={styles.chartCard}>
           <Text style={styles.cardTitle}>Gráfico de Rendimiento</Text>
           <View style={styles.chartPlaceholder}>
@@ -88,87 +167,6 @@ const StatisticsScreen = ({ navigation }) => {
       </ScrollView>
     </SafeAreaView>
   );
-};
-
-const styles = {
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.surface.secondary,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: theme.spacing[5],
-    paddingVertical: theme.spacing[6],
-  },
-  backIcon: {
-    fontSize: 20,
-    color: theme.colors.text.primary,
-  },
-  cardTitle: {
-    ...theme.typography.styles.h4,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[4],
-  },
-  periodCard: {
-    marginBottom: theme.spacing[6],
-  },
-  periodButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  periodButton: {
-    flex: 1,
-    marginHorizontal: theme.spacing[1],
-  },
-  overviewCard: {
-    marginBottom: theme.spacing[6],
-  },
-  overviewGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  overviewItem: {
-    width: '48%',
-    alignItems: 'center',
-    marginBottom: theme.spacing[4],
-  },
-  overviewNumber: {
-    ...theme.typography.styles.h2,
-    color: theme.colors.primary[500],
-    fontWeight: 'bold',
-  },
-  overviewLabel: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-    marginTop: theme.spacing[1],
-  },
-  chartCard: {
-    marginBottom: theme.spacing[6],
-  },
-  chartPlaceholder: {
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.neutral[50],
-    borderRadius: theme.borderRadius.md,
-    borderWidth: 2,
-    borderColor: theme.colors.border.light,
-    borderStyle: 'dashed',
-  },
-  placeholderText: {
-    ...theme.typography.styles.body,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing[2],
-  },
-  placeholderSubtext: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.tertiary,
-    textAlign: 'center',
-  },
 };
 
 export default StatisticsScreen;

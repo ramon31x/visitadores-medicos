@@ -1,12 +1,13 @@
-// src/screens/doctors/DoctorsListScreen.js
+// src/screens/doctors/DoctorsListScreen.js - ACTUALIZADO
 import React, { useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Input, Button } from '../../components/ui';
 import { Header } from '../../components/layout';
-import { theme } from '../../theme';
+import { useTheme } from '../../theme/ThemeProvider';
 
 const DoctorsListScreen = ({ navigation }) => {
+  const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   
   const mockDoctors = [
@@ -14,6 +15,51 @@ const DoctorsListScreen = ({ navigation }) => {
     { id: 2, name: 'Dra. María López', specialty: 'Pediatría', hospital: 'Clínica San José' },
     { id: 3, name: 'Dr. Carlos Ruiz', specialty: 'Neurología', hospital: 'Hospital Nacional' },
   ];
+
+  const styles = {
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.surface.secondary,
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: theme.spacing[5],
+      paddingVertical: theme.spacing[6],
+    },
+    backIcon: {
+      fontSize: 20,
+      color: theme.colors.text.primary,
+    },
+    searchInput: {
+      marginBottom: theme.spacing[4],
+    },
+    listContent: {
+      paddingBottom: theme.spacing[4],
+    },
+    doctorCard: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing[3],
+    },
+    doctorInfo: {
+      flex: 1,
+    },
+    doctorName: {
+      ...theme.typography.styles.label,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[1],
+    },
+    doctorSpecialty: {
+      ...theme.typography.styles.body,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing[1],
+    },
+    doctorHospital: {
+      ...theme.typography.styles.caption,
+      color: theme.colors.text.tertiary,
+    },
+  };
 
   const renderDoctor = ({ item }) => (
     <Card variant="default" padding="md" style={styles.doctorCard}>
@@ -59,51 +105,6 @@ const DoctorsListScreen = ({ navigation }) => {
       </View>
     </SafeAreaView>
   );
-};
-
-const styles = {
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.surface.secondary,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: theme.spacing[5],
-    paddingVertical: theme.spacing[6],
-  },
-  backIcon: {
-    fontSize: 20,
-    color: theme.colors.text.primary,
-  },
-  searchInput: {
-    marginBottom: theme.spacing[4],
-  },
-  listContent: {
-    paddingBottom: theme.spacing[4],
-  },
-  doctorCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing[3],
-  },
-  doctorInfo: {
-    flex: 1,
-  },
-  doctorName: {
-    ...theme.typography.styles.label,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[1],
-  },
-  doctorSpecialty: {
-    ...theme.typography.styles.body,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing[1],
-  },
-  doctorHospital: {
-    ...theme.typography.styles.caption,
-    color: theme.colors.text.tertiary,
-  },
 };
 
 export default DoctorsListScreen;

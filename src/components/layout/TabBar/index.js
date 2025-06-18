@@ -1,10 +1,12 @@
-// src/components/layout/TabBar/index.js
+// src/components/layout/TabBar/index.js - ACTUALIZADO
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { theme } from '../../../theme';
+import { useTheme } from '../../../theme/ThemeProvider';
 import styles from './styles';
 
 const TabBar = ({ state, descriptors, navigation }) => {
+  const theme = useTheme();
+
   const getTabIcon = (routeName) => {
     const icons = {
       Dashboard: '📊',
@@ -28,7 +30,7 @@ const TabBar = ({ state, descriptors, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container(theme)}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -62,25 +64,25 @@ const TabBar = ({ state, descriptors, navigation }) => {
             onPress={onPress}
             onLongPress={onLongPress}
             style={[
-              styles.tab,
-              isFocused && styles.tabFocused
+              styles.tab(theme),
+              isFocused && styles.tabFocused(theme)
             ]}
           >
             <View style={[
-              styles.tabIconContainer,
-              isFocused && styles.tabIconContainerFocused
+              styles.tabIconContainer(theme),
+              isFocused && styles.tabIconContainerFocused(theme)
             ]}>
               <Text style={[
-                styles.tabIcon,
-                isFocused && styles.tabIconFocused
+                styles.tabIcon(theme),
+                isFocused && styles.tabIconFocused(theme)
               ]}>
                 {getTabIcon(route.name)}
               </Text>
             </View>
             
             <Text style={[
-              styles.tabLabel,
-              isFocused && styles.tabLabelFocused
+              styles.tabLabel(theme),
+              isFocused && styles.tabLabelFocused(theme)
             ]}>
               {getTabLabel(route.name)}
             </Text>

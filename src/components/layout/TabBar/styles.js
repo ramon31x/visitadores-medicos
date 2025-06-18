@@ -1,8 +1,6 @@
-// src/components/layout/TabBar/styles.js
-import { theme } from '../../../theme';
-
+// src/components/layout/TabBar/styles.js - ACTUALIZADO
 const styles = {
-  container: {
+  container: (theme) => ({
     flexDirection: 'row',
     backgroundColor: theme.colors.surface.primary,
     borderTopWidth: 1,
@@ -11,17 +9,20 @@ const styles = {
     paddingBottom: theme.spacing[4],
     paddingHorizontal: theme.spacing[2],
     ...theme.shadows.sm,
-  },
-  tab: {
+  }),
+  
+  tab: (theme) => ({
     flex: 1,
     alignItems: 'center',
     paddingVertical: theme.spacing[2],
     paddingHorizontal: theme.spacing[1],
-  },
-  tabFocused: {
+  }),
+  
+  tabFocused: (theme) => ({
     // Efecto visual sutil cuando está activo
-  },
-  tabIconContainer: {
+  }),
+  
+  tabIconContainer: (theme) => ({
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -29,28 +30,33 @@ const styles = {
     alignItems: 'center',
     marginBottom: theme.spacing[1],
     backgroundColor: 'transparent',
-  },
-  tabIconContainerFocused: {
+  }),
+  
+  tabIconContainerFocused: (theme) => ({
     backgroundColor: theme.colors.primary[100],
-  },
-  tabIcon: {
+  }),
+  
+  tabIcon: (theme) => ({
     fontSize: 18,
-  },
-  tabIconFocused: {
+  }),
+  
+  tabIconFocused: (theme) => ({
     fontSize: 20,
-  },
-  tabLabel: {
+  }),
+  
+  tabLabel: (theme) => ({
     ...theme.typography.styles.caption,
     color: theme.colors.text.tertiary,
     fontSize: 11,
     textAlign: 'center',
-  },
-  tabLabelFocused: {
+  }),
+  
+  tabLabelFocused: (theme) => ({
     ...theme.typography.styles.caption,
     color: theme.colors.primary[600],
     fontWeight: '600',
     fontSize: 11,
-  },
+  }),
 };
 
 export default styles;

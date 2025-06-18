@@ -1,37 +1,56 @@
-// src/navigation/RootNavigator.js
-import React, { useEffect } from 'react';
+// src/navigation/RootNavigator.js - VERSIÓN CON DEBUG
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Stores
 import { useAuthStore } from '../stores';
-
-// Navigators
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
-
-// Components
 import { Loading } from '../components/ui';
 
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-  const { isAuthenticated, isLoading, isInitialized, initializeAuth } = useAuthStore();
+  const [isAppReady, setIsAppReady] = useState(false);
+  
+  // 🔍 USAR SELECTORES ESPECÍFICOS
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const isInitialized = useAuthStore(state => state.isInitialized);
+  const initializeAuth = useAuthStore(state => state.initializeAuth);
+  const user = useAuthStore(state => state.user);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        console.log('🚀 Inicializando app...');
         await initializeAuth();
+        console.log('✅ App inicializada');
+        console.log('🔍 isAuthenticated:', isAuthenticated);
+        console.log('🔍 isInitialized:', isInitialized);
+        console.log('🔍 user:', user);
+        setIsAppReady(true);
       } catch (error) {
-        console.log('Error initializing auth:', error);
+        console.error('❌ Error inicializando app:', error);
+        setIsAppReady(true);
       }
     };
 
     initializeApp();
-  }, [initializeAuth]);
+  }, []);
 
-  // Mostrar loading mientras se inicializa la app
-  if (!isInitialized || isLoading) {
+  // 🔍 DEBUG: Log cada vez que cambie el estado
+  useEffect(() => {
+    console.log('🔄 Estado auth cambió:', {
+      isAppReady,
+      isAuthenticated,
+      isInitialized,
+      hasUser: !!user
+    });
+  }, [isAppReady, isAuthenticated, isInitialized, user]);
+
+  // Mostrar loading mientras se inicializa
+  if (!isAppReady) {
+    console.log('⏳ Mostrando loading...');
     return (
       <Loading 
         overlay={true}
@@ -39,6 +58,8 @@ const RootNavigator = () => {
       />
     );
   }
+
+  console.log('🗺️ Renderizando navegación:', isAuthenticated ? 'Main' : 'Auth');
 
   return (
     <NavigationContainer>
@@ -52,17 +73,11 @@ const RootNavigator = () => {
           <Stack.Screen 
             name="Main" 
             component={MainNavigator}
-            options={{
-              animationTypeForReplace: 'push',
-            }}
           />
         ) : (
           <Stack.Screen 
             name="Auth" 
             component={AuthNavigator}
-            options={{
-              animationTypeForReplace: 'pop',
-            }}
           />
         )}
       </Stack.Navigator>

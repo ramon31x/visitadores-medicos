@@ -6,6 +6,10 @@ import { saveAuthSession, getRefreshToken, saveToken } from '../storage/auth';
 export const login = async (credentials) => {
   try {
     console.log('📡 Enviando request de login...');
+
+    console.log('📡 Enviando request de login...');
+    console.log('🔍 Credentials exactas:', credentials);
+    console.log('🔍 Endpoint:', endpoints.auth.login);
     const response = await apiClient.post(endpoints.auth.login, credentials);
     
     console.log('✅ Response de login recibida:', response);
