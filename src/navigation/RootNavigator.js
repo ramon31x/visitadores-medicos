@@ -21,7 +21,6 @@ const RootNavigator = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Inicializar autenticación desde storage
         await initializeAuth();
       } catch (error) {
         console.log('Error initializing auth:', error);
@@ -34,8 +33,8 @@ const RootNavigator = () => {
   // Mostrar loading mientras se inicializa la app
   if (!isInitialized || isLoading) {
     return (
-      <Loading.Overlay 
-        visible={true} 
+      <Loading 
+        overlay={true}
         text="Inicializando aplicación..." 
       />
     );

@@ -1,155 +1,83 @@
 // src/components/ui/Input/index.js
-import React, { useState, forwardRef } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
-import { styles } from './styles';
+import { theme } from '../../../theme';
+import styles from './styles';
 
-const Input = forwardRef(({
+const Input = ({
   label,
   placeholder,
   value,
   onChangeText,
-  onBlur,
-  onFocus,
   error,
   helperText,
-  disabled = false,
+  leftIcon,
+  rightIcon,
   secureTextEntry = false,
-  keyboardType = 'default',
-  autoCapitalize = 'none',
-  autoCorrect = false,
-  maxLength,
+  editable = true,
   multiline = false,
   numberOfLines = 1,
-  leftIcon = null,
-  rightIcon = null,
-  onRightIconPress,
-  variant = 'default',
-  size = 'medium',
   style,
   inputStyle,
   ...props
-}, ref) => {
-  const [focused, setFocused] = useState(false);
-  const [isSecure, setIsSecure] = useState(secureTextEntry);
-
-  const handleFocus = (e) => {
-    setFocused(true);
-    onFocus && onFocus(e);
-  };
-
-  const handleBlur = (e) => {
-    setFocused(false);
-    onBlur && onBlur(e);
-  };
-
-  const toggleSecureEntry = () => {
-    setIsSecure(!isSecure);
-  };
-
-  const getContainerStyles = () => {
-    return [
-      styles.container,
-      style,
-    ];
-  };
-
-  const getInputContainerStyles = () => {
-    return [
-      styles.inputContainer,
-      styles[variant],
-      styles[size],
-      focused && styles.focused,
-      error && styles.error,
-      disabled && styles.disabled,
-    ];
-  };
-
-  const getInputStyles = () => {
-    return [
-      styles.input,
-      styles[`${size}Input`],
-      multiline && styles.multilineInput,
-      leftIcon && styles.inputWithLeftIcon,
-      (rightIcon || secureTextEntry) && styles.inputWithRightIcon,
-      inputStyle,
-    ];
-  };
-
-  // Renderizar icono de toggle para password
-  const renderToggleIcon = () => {
-    if (!secureTextEntry) return rightIcon;
-    
-    return (
-      <TouchableOpacity onPress={toggleSecureEntry} style={styles.iconButton}>
-        <Text style={styles.toggleIcon}>
-          {isSecure ? '👁️' : '👁️‍🗨️'}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const hasError = !!error;
 
   return (
-    <View style={getContainerStyles()}>
+    <View style={[styles.container, style]}>
       {label && (
-        <Text style={[
-          styles.label,
-          focused && styles.labelFocused,
-          error && styles.labelError,
-          disabled && styles.labelDisabled,
-        ]}>
-          {label}
-        </Text>
+        <Text style={styles.label}>{label}</Text>
       )}
       
-      <View style={getInputContainerStyles()}>
+      <View style={[
+        styles.inputContainer,
+        isFocused && styles.inputContainerFocused,
+        hasError && styles.inputContainerError,
+        !editable && styles.inputContainerDisabled
+      ]}>
         {leftIcon && (
-          <View style={styles.leftIconContainer}>
+          <View style={styles.leftIcon}>
             {leftIcon}
           </View>
         )}
         
         <TextInput
-          ref={ref}
-          style={getInputStyles()}
+          style={[
+            styles.input,
+            multiline && styles.inputMultiline,
+            inputStyle
+          ]}
           placeholder={placeholder}
-          placeholderTextColor={styles.placeholder.color}
+          placeholderTextColor={theme.colors.text.tertiary}
           value={value}
           onChangeText={onChangeText}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          editable={!disabled}
-          secureTextEntry={isSecure}
-          keyboardType={keyboardType}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={autoCorrect}
-          maxLength={maxLength}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          secureTextEntry={secureTextEntry}
+          editable={editable}
           multiline={multiline}
           numberOfLines={numberOfLines}
           {...props}
         />
         
-        {(rightIcon || secureTextEntry) && (
-          <View style={styles.rightIconContainer}>
-            {secureTextEntry ? renderToggleIcon() : rightIcon}
-          </View>
+        {rightIcon && (
+          <TouchableOpacity style={styles.rightIcon}>
+            {rightIcon}
+          </TouchableOpacity>
         )}
       </View>
       
-      {error && (
-        <Text style={styles.errorText}>
-          {error}
-        </Text>
-      )}
-      
-      {helperText && !error && (
-        <Text style={styles.helperText}>
-          {helperText}
+      {(error || helperText) && (
+        <Text style={[
+          styles.helperText,
+          hasError && styles.errorText
+        ]}>
+          {error || helperText}
         </Text>
       )}
     </View>
   );
-});
-
-Input.displayName = 'Input';
+};
 
 export default Input;

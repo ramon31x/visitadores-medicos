@@ -1,111 +1,133 @@
 // src/screens/auth/SplashScreen.js
 import React, { useEffect } from 'react';
-import { View, Text, Image, StatusBar } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Loading } from '../../components/ui';
-import { colors, typography, spacing } from '../../theme';
+import { theme } from '../../theme';
+import { useAuthStore } from '../../stores/authStore';
 
-const SplashScreen = () => {
-  const navigation = useNavigation();
+const SplashScreen = ({ navigation }) => {
+  const { checkAuthState, isLoading } = useAuthStore();
 
   useEffect(() => {
-    // Simular tiempo de carga inicial
-    const timer = setTimeout(() => {
-      navigation.replace('Login');
-    }, 2000);
+    initializeApp();
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  const initializeApp = async () => {
+    try {
+      // Simular tiempo mínimo de splash para UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Verificar estado de autenticación
+      await checkAuthState();
+      
+      // La navegación se maneja automáticamente por el RootNavigator
+      // basado en el estado de autenticación
+    } catch (error) {
+      console.error('Error al inicializar la app:', error);
+      // En caso de error, ir al login
+      navigation.replace('Login');
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor="#007AFF" barStyle="light-content" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar 
+        barStyle="light-content" 
+        backgroundColor={theme.colors.primary[500]} 
+      />
       
       <View style={styles.content}>
-        {/* Logo o icono de la app */}
+        {/* Logo Section */}
         <View style={styles.logoContainer}>
-          <Text style={styles.logoIcon}>🏥</Text>
-          <Text style={styles.logoText}>VisitaMed</Text>
-          <Text style={styles.subtitle}>Sistema de Visitadores Médicos</Text>
+          <View style={styles.logoCircle}>
+            <Text style={styles.logoIcon}>🏥</Text>
+          </View>
+          <Text style={styles.appName}>Visitadores Médicos</Text>
+          <Text style={styles.tagline}>Sistema de Gestión Médica</Text>
         </View>
-        
-        {/* Loading indicator */}
+
+        {/* Loading Section */}
         <View style={styles.loadingContainer}>
-          <Loading size="large" color={colors.white} />
-          <Text style={styles.loadingText}>Inicializando aplicación...</Text>
+          <Loading 
+            size="large" 
+            color={theme.colors.text.inverse}
+            text="Cargando aplicación..."
+          />
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Profesional • Seguro • Confiable
+          </Text>
+          <Text style={styles.versionText}>v1.0.0</Text>
         </View>
       </View>
-      
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Versión 1.0.0</Text>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: theme.colors.primary[500],
   },
-  
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: theme.spacing[6],
+    paddingVertical: theme.spacing[12],
   },
-  
   logoContainer: {
     alignItems: 'center',
-    marginBottom: spacing.xl * 2,
+    flex: 1,
+    justifyContent: 'center',
   },
-  
+  logoCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: theme.colors.text.inverse,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing[8],
+    ...theme.shadows.xl,
+  },
   logoIcon: {
-    fontSize: 80,
-    marginBottom: spacing.md,
-  },
-  
-  logoText: {
-    fontSize: typography.fontSize.xxl,
-    fontFamily: typography.fontFamily.bold,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    marginBottom: spacing.sm,
-  },
-  
-  subtitle: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.regular,
-    color: '#FFFFFF',
+    fontSize: 48,
     textAlign: 'center',
-    opacity: 0.9,
   },
-  
+  appName: {
+    ...theme.typography.styles.h1,
+    color: theme.colors.text.inverse,
+    textAlign: 'center',
+    marginBottom: theme.spacing[3],
+    fontWeight: 'bold',
+  },
+  tagline: {
+    ...theme.typography.styles.bodyLarge,
+    color: theme.colors.primary[100],
+    textAlign: 'center',
+    maxWidth: 280,
+  },
   loadingContainer: {
+    marginBottom: theme.spacing[8],
+  },
+  footer: {
     alignItems: 'center',
   },
-  
-  loadingText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: '#FFFFFF',
-    marginTop: spacing.md,
-    opacity: 0.8,
-  },
-  
-  footer: {
-    paddingBottom: spacing.xl,
-  },
-  
   footerText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.regular,
-    color: '#FFFFFF',
-    opacity: 0.7,
+    ...theme.typography.styles.bodySmall,
+    color: theme.colors.primary[200],
+    textAlign: 'center',
+    marginBottom: theme.spacing[2],
+  },
+  versionText: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.primary[300],
+    fontSize: 11,
   },
 };
 

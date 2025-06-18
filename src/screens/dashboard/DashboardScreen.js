@@ -1,128 +1,150 @@
 // src/screens/dashboard/DashboardScreen.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Components
 import { Card, Button, Loading } from '../../components/ui';
 import { Header } from '../../components/layout';
-
-// Stores
-import { useAuthStore } from '../../stores';
-
-// Theme
-import { colors, typography, spacing } from '../../theme';
+import { theme } from '../../theme';
+import { useAuthStore } from '../../stores/authStore';
 
 const DashboardScreen = ({ navigation }) => {
-  const { user, logout, getUserName, getRouteName } = useAuthStore();
-  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const { user } = useAuthStore();
+  const [refreshing, setRefreshing] = useState(false);
+  const [stats, setStats] = useState({
+    todayVisits: 3,
+    weeklyVisits: 18,
+    monthlyVisits: 74,
+    completedForms: 12
+  });
 
-  const onRefresh = React.useCallback(() => {
-    setIsRefreshing(true);
-    // Simular carga de datos
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 2000);
+  useEffect(() => {
+    loadDashboardData();
   }, []);
 
-  const handleLogout = () => {
-    logout();
+  const loadDashboardData = async () => {
+    try {
+      // TODO: Conectar con API real
+      // const response = await api.getStats();
+      console.log('Cargando datos del dashboard...');
+    } catch (error) {
+      console.error('Error cargando dashboard:', error);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadDashboardData();
+    setRefreshing(false);
+  };
+
+  const navigateToSection = (section) => {
+    navigation.navigate(section);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header.Main 
+      <Header 
         title="Dashboard"
-        subtitle={`Bienvenido, ${getUserName()}`}
-        onMenuPress={() => {}}
-        onNotificationPress={() => {}}
+        subtitle={`Bienvenido, ${user?.name || 'Visitador'}`}
+        variant="default"
       />
       
       <ScrollView 
-        style={styles.content}
+        style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Usuario Info */}
-        <Card style={styles.userCard} padding="large">
-          <Text style={styles.welcomeText}>
-            ¡Hola, {getUserName()}! 👋
-          </Text>
-          <Text style={styles.userInfo}>
-            Ruta: {getRouteName() || 'Sin asignar'}
-          </Text>
-          <Text style={styles.userInfo}>
-            Usuario: {user?.username}
-          </Text>
-        </Card>
-
         {/* Stats Cards */}
-        <View style={styles.statsGrid}>
-          <Card style={styles.statCard} padding="medium">
-            <Text style={styles.statNumber}>15</Text>
-            <Text style={styles.statLabel}>Visitas este mes</Text>
-          </Card>
+        <View style={styles.statsContainer}>
+          <Text style={styles.sectionTitle}>Resumen de Actividad</Text>
           
-          <Card style={styles.statCard} padding="medium">
-            <Text style={styles.statNumber}>8</Text>
-            <Text style={styles.statLabel}>Médicos activos</Text>
-          </Card>
-        </View>
-
-        <View style={styles.statsGrid}>
-          <Card style={styles.statCard} padding="medium">
-            <Text style={styles.statNumber}>12</Text>
-            <Text style={styles.statLabel}>Formularios</Text>
-          </Card>
-          
-          <Card style={styles.statCard} padding="medium">
-            <Text style={styles.statNumber}>95%</Text>
-            <Text style={styles.statLabel}>Efectividad</Text>
-          </Card>
+          <View style={styles.statsGrid}>
+            <Card variant="elevated" style={styles.statCard}>
+              <Text style={styles.statNumber}>{stats.todayVisits}</Text>
+              <Text style={styles.statLabel}>Visitas Hoy</Text>
+            </Card>
+            
+            <Card variant="elevated" style={styles.statCard}>
+              <Text style={styles.statNumber}>{stats.weeklyVisits}</Text>
+              <Text style={styles.statLabel}>Esta Semana</Text>
+            </Card>
+            
+            <Card variant="elevated" style={styles.statCard}>
+              <Text style={styles.statNumber}>{stats.monthlyVisits}</Text>
+              <Text style={styles.statLabel}>Este Mes</Text>
+            </Card>
+            
+            <Card variant="elevated" style={styles.statCard}>
+              <Text style={styles.statNumber}>{stats.completedForms}</Text>
+              <Text style={styles.statLabel}>Formularios</Text>
+            </Card>
+          </View>
         </View>
 
         {/* Quick Actions */}
-        <Card style={styles.actionsCard} padding="large">
+        <View style={styles.actionsContainer}>
           <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
           
-          <View style={styles.actionsList}>
+          <Card variant="default" padding="lg">
             <Button
-              title="📅 Ver Planificación"
-              variant="outline"
-              onPress={() => navigation.navigate('Planning')}
+              variant="primary"
+              size="lg"
+              onPress={() => navigateToSection('Planning')}
               style={styles.actionButton}
-            />
+            >
+              📅 Planificar Visitas
+            </Button>
             
             <Button
-              title="👨‍⚕️ Lista de Médicos"
-              variant="outline"
-              onPress={() => navigation.navigate('Doctors')}
+              variant="secondary"
+              size="lg"
+              onPress={() => navigateToSection('Doctors')}
               style={styles.actionButton}
-            />
+            >
+              👨‍⚕️ Lista de Médicos
+            </Button>
             
             <Button
-              title="🏥 Mis Visitas"
               variant="outline"
-              onPress={() => navigation.navigate('Visits')}
+              size="lg"
+              onPress={() => navigateToSection('Visits')}
               style={styles.actionButton}
-            />
-          </View>
-        </Card>
+            >
+              🏥 Mis Visitas
+            </Button>
+          </Card>
+        </View>
 
-        {/* Debug/Test Section */}
-        <Card style={styles.debugCard} variant="filled" padding="large">
-          <Text style={styles.debugTitle}>🛠️ Funciones de Prueba</Text>
+        {/* Recent Activity */}
+        <View style={styles.activityContainer}>
+          <Text style={styles.sectionTitle}>Actividad Reciente</Text>
           
-          <Button
-            title="Cerrar Sesión"
-            variant="danger"
-            onPress={handleLogout}
-            style={styles.logoutButton}
-          />
-        </Card>
+          <Card variant="default" padding="md">
+            <View style={styles.activityItem}>
+              <Text style={styles.activityText}>
+                ✅ Visita completada - Dr. García
+              </Text>
+              <Text style={styles.activityTime}>Hace 2 horas</Text>
+            </View>
+            
+            <View style={styles.activityItem}>
+              <Text style={styles.activityText}>
+                📝 Formulario enviado - Hospital Central
+              </Text>
+              <Text style={styles.activityTime}>Ayer</Text>
+            </View>
+            
+            <View style={styles.activityItem}>
+              <Text style={styles.activityText}>
+                📅 Plan semanal creado
+              </Text>
+              <Text style={styles.activityTime}>Hace 3 días</Text>
+            </View>
+          </Card>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -131,97 +153,70 @@ const DashboardScreen = ({ navigation }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: theme.colors.surface.secondary,
   },
-  
-  content: {
+  scrollView: {
     flex: 1,
   },
-  
   scrollContent: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
+    paddingHorizontal: theme.spacing[5],
+    paddingVertical: theme.spacing[6],
   },
-  
-  userCard: {
-    marginBottom: spacing.lg,
+  sectionTitle: {
+    ...theme.typography.styles.h3,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[4],
   },
-  
-  welcomeText: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.semiBold,
-    color: colors.text.primary,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
+  statsContainer: {
+    marginBottom: theme.spacing[8],
   },
-  
-  userInfo: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
-  },
-  
   statsGrid: {
     flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.md,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  
   statCard: {
-    flex: 1,
+    width: '48%',
     alignItems: 'center',
+    paddingVertical: theme.spacing[6],
+    marginBottom: theme.spacing[4],
   },
-  
   statNumber: {
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.primary,
+    ...theme.typography.styles.h2,
+    color: theme.colors.primary[500],
     fontWeight: 'bold',
-    marginBottom: spacing.xs,
+    marginBottom: theme.spacing[2],
   },
-  
   statLabel: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.secondary,
     textAlign: 'center',
   },
-  
-  actionsCard: {
-    marginVertical: spacing.lg,
+  actionsContainer: {
+    marginBottom: theme.spacing[8],
   },
-  
-  sectionTitle: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.semiBold,
-    color: colors.text.primary,
-    fontWeight: '600',
-    marginBottom: spacing.md,
-  },
-  
-  actionsList: {
-    gap: spacing.sm,
-  },
-  
   actionButton: {
-    marginBottom: spacing.xs,
+    marginBottom: theme.spacing[3],
   },
-  
-  debugCard: {
-    marginTop: spacing.lg,
+  activityContainer: {
+    marginBottom: theme.spacing[6],
   },
-  
-  debugTitle: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-    fontWeight: '600',
-    marginBottom: spacing.md,
+  activityItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: theme.spacing[3],
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border.light,
   },
-  
-  logoutButton: {
-    marginTop: spacing.sm,
+  activityText: {
+    ...theme.typography.styles.body,
+    color: theme.colors.text.primary,
+    flex: 1,
+  },
+  activityTime: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.tertiary,
   },
 };
 

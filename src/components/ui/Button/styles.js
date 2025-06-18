@@ -1,146 +1,112 @@
 // src/components/ui/Button/styles.js
-import { StyleSheet } from 'react-native';
-import { colors, typography, spacing } from '../../../theme';
+import { theme } from '../../../theme';
 
-export const styles = StyleSheet.create({
-  button: {
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  
+const styles = {
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  // Variants
-  primary: {
-    backgroundColor: colors.primary,
-    borderWidth: 0,
+  leftIcon: {
+    marginRight: theme.spacing[2],
   },
-  
-  secondary: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  
-  ghost: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-  },
-  
-  danger: {
-    backgroundColor: colors.error,
-    borderWidth: 0,
+  rightIcon: {
+    marginLeft: theme.spacing[2],
   },
 
-  success: {
-    backgroundColor: colors.success,
-    borderWidth: 0,
+  getButtonStyle: (variant, size, disabled) => {
+    const baseStyle = {
+      borderRadius: theme.borderRadius.component.button,
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.shadows.button,
+    };
+
+    // Size variants
+    const sizeStyles = {
+      sm: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        minHeight: 36,
+      },
+      md: {
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        minHeight: 44,
+      },
+      lg: {
+        paddingHorizontal: 32,
+        paddingVertical: 16,
+        minHeight: 52,
+      }
+    };
+
+    // Variant styles
+    const variantStyles = {
+      primary: {
+        backgroundColor: disabled ? theme.colors.neutral[300] : theme.colors.primary[500],
+      },
+      secondary: {
+        backgroundColor: disabled ? theme.colors.neutral[200] : theme.colors.secondary[500],
+      },
+      outline: {
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        borderColor: disabled ? theme.colors.neutral[300] : theme.colors.primary[500],
+      },
+      ghost: {
+        backgroundColor: 'transparent',
+      },
+      danger: {
+        backgroundColor: disabled ? theme.colors.neutral[300] : theme.colors.status.error,
+      }
+    };
+
+    return {
+      ...baseStyle,
+      ...sizeStyles[size],
+      ...variantStyles[variant],
+    };
   },
 
-  // Sizes
-  small: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    minHeight: 32,
-  },
-  
-  medium: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    minHeight: 44,
-  },
-  
-  large: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    minHeight: 52,
-  },
+  getTextStyle: (variant, size, disabled) => {
+    const baseStyle = {
+      ...theme.typography.styles.button,
+      textAlign: 'center',
+    };
 
-  // States
-  disabled: {
-    opacity: 0.5,
-  },
-  
-  loading: {
-    opacity: 0.8,
-  },
+    // Size text styles
+    const sizeStyles = {
+      sm: { fontSize: 14 },
+      md: { fontSize: 16 },
+      lg: { fontSize: 18 }
+    };
 
-  fullWidth: {
-    width: '100%',
-  },
+    // Variant text colors
+    const variantStyles = {
+      primary: {
+        color: disabled ? theme.colors.text.disabled : theme.colors.text.inverse,
+      },
+      secondary: {
+        color: disabled ? theme.colors.text.disabled : theme.colors.text.inverse,
+      },
+      outline: {
+        color: disabled ? theme.colors.text.disabled : theme.colors.primary[500],
+      },
+      ghost: {
+        color: disabled ? theme.colors.text.disabled : theme.colors.primary[500],
+      },
+      danger: {
+        color: disabled ? theme.colors.text.disabled : theme.colors.text.inverse,
+      }
+    };
 
-  // Text styles
-  text: {
-    fontFamily: typography.fontFamily.medium,
-    textAlign: 'center',
-  },
-  
-  // Text variants
-  primaryText: {
-    color: colors.white,
-    fontWeight: '600',
-  },
-  
-  secondaryText: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  
-  outlineText: {
-    color: colors.text.primary,
-    fontWeight: '500',
-  },
-  
-  ghostText: {
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  
-  dangerText: {
-    color: colors.white,
-    fontWeight: '600',
-  },
+    return {
+      ...baseStyle,
+      ...sizeStyles[size],
+      ...variantStyles[variant],
+    };
+  }
+};
 
-  successText: {
-    color: colors.white,
-    fontWeight: '600',
-  },
-  
-  // Text sizes
-  smallText: {
-    fontSize: typography.fontSize.sm,
-  },
-  
-  mediumText: {
-    fontSize: typography.fontSize.base,
-  },
-  
-  largeText: {
-    fontSize: typography.fontSize.lg,
-  },
-  
-  disabledText: {
-    opacity: 0.7,
-  },
-
-  // Icon styles
-  iconContainer: {
-    marginRight: spacing.xs,
-  },
-  
-  loader: {
-    marginRight: 0,
-  },
-});
+export default styles;

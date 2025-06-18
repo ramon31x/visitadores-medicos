@@ -1,71 +1,45 @@
 // src/components/ui/Button/index.js
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, View } from 'react-native';
-import { styles } from './styles';
+import { theme } from '../../../theme';
+import styles from './styles';
 
-const Button = ({
-  title,
-  onPress,
-  variant = 'primary',
-  size = 'medium',
-  disabled = false,
+const Button = ({ 
+  variant = 'primary', 
+  size = 'md',
+  children, 
+  onPress, 
+  disabled = false, 
   loading = false,
-  icon = null,
-  fullWidth = false,
+  leftIcon,
+  rightIcon,
   style,
   textStyle,
-  ...props
+  ...props 
 }) => {
-  const getButtonStyles = () => {
-    return [
-      styles.button,
-      styles[variant],
-      styles[size],
-      fullWidth && styles.fullWidth,
-      disabled && styles.disabled,
-      loading && styles.loading,
-      style,
-    ];
-  };
-
-  const getTextStyles = () => {
-    return [
-      styles.text,
-      styles[`${variant}Text`],
-      styles[`${size}Text`],
-      disabled && styles.disabledText,
-      textStyle,
-    ];
-  };
-
-  const handlePress = () => {
-    if (!disabled && !loading && onPress) {
-      onPress();
-    }
-  };
+  const buttonStyle = styles.getButtonStyle(variant, size, disabled);
+  const textStyles = styles.getTextStyle(variant, size, disabled);
 
   return (
     <TouchableOpacity
-      style={getButtonStyles()}
-      onPress={handlePress}
+      style={[buttonStyle, style]}
+      onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
       {...props}
     >
-      <View style={styles.content}>
-        {loading ? (
-          <ActivityIndicator
-            size={size === 'small' ? 'small' : 'small'}
-            color={variant === 'primary' ? '#FFFFFF' : '#007AFF'}
-            style={styles.loader}
-          />
-        ) : (
-          <>
-            {icon && <View style={styles.iconContainer}>{icon}</View>}
-            <Text style={getTextStyles()}>{title}</Text>
-          </>
-        )}
-      </View>
+      {loading ? (
+        <ActivityIndicator 
+          color={textStyles.color} 
+          size="small" 
+        />
+      ) : (
+        <View style={styles.content}>
+          {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
+          <Text style={[textStyles, textStyle]}>{children}</Text>
+          {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
+        </View>
+      )}
     </TouchableOpacity>
   );
 };

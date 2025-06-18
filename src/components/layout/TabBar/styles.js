@@ -1,120 +1,56 @@
 // src/components/layout/TabBar/styles.js
-import { StyleSheet } from 'react-native';
-import { colors, typography, spacing } from '../../../theme';
+import { theme } from '../../../theme';
 
-export const styles = StyleSheet.create({
+const styles = {
   container: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: theme.colors.surface.primary,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: spacing.xs,
-    elevation: 8,
-    shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderTopColor: theme.colors.border.light,
+    paddingTop: theme.spacing[2],
+    paddingBottom: theme.spacing[4],
+    paddingHorizontal: theme.spacing[2],
+    ...theme.shadows.sm,
   },
-  
-  // Variants
-  default: {
-    backgroundColor: colors.white,
-  },
-  
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  
-  dark: {
-    backgroundColor: colors.background.dark,
-    borderTopColor: colors.border,
-  },
-  
-  // Tab styles
   tab: {
     flex: 1,
     alignItems: 'center',
+    paddingVertical: theme.spacing[2],
+    paddingHorizontal: theme.spacing[1],
+  },
+  tabFocused: {
+    // Efecto visual sutil cuando está activo
+  },
+  tabIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.xs,
-    minHeight: 60,
-  },
-  
-  tabActive: {
-    // Active tab styles handled by individual elements
-  },
-  
-  tabContent: {
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
+    marginBottom: theme.spacing[1],
+    backgroundColor: 'transparent',
   },
-  
-  // Icon styles
-  iconContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
+  tabIconContainerFocused: {
+    backgroundColor: theme.colors.primary[100],
   },
-  
-  icon: {
+  tabIcon: {
+    fontSize: 18,
+  },
+  tabIconFocused: {
     fontSize: 20,
-    marginBottom: spacing.xs,
-    color: colors.text.secondary,
   },
-  
-  iconActive: {
-    color: colors.primary,
-    fontSize: 22,
-  },
-  
-  // Label styles
-  label: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+  tabLabel: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.tertiary,
+    fontSize: 11,
     textAlign: 'center',
-    marginTop: 2,
   },
-  
-  labelActive: {
-    color: colors.primary,
-    fontFamily: typography.fontFamily.medium,
+  tabLabelFocused: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.primary[600],
     fontWeight: '600',
+    fontSize: 11,
   },
-  
-  // Active indicator
-  indicator: {
-    position: 'absolute',
-    top: -spacing.sm - 2,
-    width: 4,
-    height: 4,
-    backgroundColor: colors.primary,
-    borderRadius: 2,
-  },
-  
-  // Badge styles
-  badge: {
-    position: 'absolute',
-    top: -4,
-    right: -8,
-    backgroundColor: colors.error,
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  
-  badgeText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.white,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
+};
+
+export default styles;

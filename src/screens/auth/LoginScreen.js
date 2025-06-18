@@ -3,79 +3,25 @@ import React, { useState } from 'react';
 import { 
   View, 
   Text, 
-  StatusBar, 
+  ScrollView, 
   KeyboardAvoidingView, 
-  Platform,
-  ScrollView,
-  Alert 
+  Alert,
+  StatusBar 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button, Input, Card } from '../../components/ui';
+import { theme } from '../../theme';
+import { useAuthStore } from '../../stores/authStore';
 
-// Components
-import { Button, Input, Card, Loading } from '../../components/ui';
-import { Header } from '../../components/layout';
-
-// Stores
-import { useAuthStore } from '../../stores';
-
-// Theme
-import { colors, typography, spacing } from '../../theme';
-
-const LoginScreen = () => {
-  const { login, isLoading, error, clearError } = useAuthStore();
-  
+const LoginScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    username: 'visitador1', // Pre-filled para testing
-    password: '123456',     // Pre-filled para testing
+    username: '',
+    password: ''
   });
-  
-  const [formErrors, setFormErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  const validateForm = () => {
-    const errors = {};
-    
-    if (!formData.username.trim()) {
-      errors.username = 'El usuario es requerido';
-    }
-    
-    if (!formData.password.trim()) {
-      errors.password = 'La contraseña es requerida';
-    } else if (formData.password.length < 6) {
-      errors.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-    
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleLogin = async () => {
-    // Limpiar error anterior
-    clearError();
-    
-    // Validar formulario
-    if (!validateForm()) {
-      return;
-    }
-    
-    try {
-      const result = await login(formData);
-      
-      if (!result.success) {
-        Alert.alert(
-          'Error de autenticación',
-          result.error || 'Credenciales incorrectas',
-          [{ text: 'OK' }]
-        );
-      }
-      // Si es exitoso, el RootNavigator se encargará de la navegación
-    } catch (error) {
-      Alert.alert(
-        'Error',
-        'Ocurrió un error inesperado. Intenta de nuevo.',
-        [{ text: 'OK' }]
-      );
-    }
-  };
+  const { login } = useAuthStore();
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -83,88 +29,149 @@ const LoginScreen = () => {
       [field]: value
     }));
     
-    // Limpiar error del campo cuando el usuario empiece a escribir
-    if (formErrors[field]) {
-      setFormErrors(prev => ({
+    // Limpiar error cuando usuario empiece a escribir
+    if (errors[field]) {
+      setErrors(prev => ({
         ...prev,
         [field]: null
       }));
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.username.trim()) {
+      newErrors.username = 'El usuario es requerido';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'La contraseña es requerida';
+    } else if (formData.password.length < 3) {
+      newErrors.password = 'La contraseña debe tener al menos 3 caracteres';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
+    
+    try {
+      const success = await login(formData.username, formData.password);
+      
+      if (success) {
+        // El navigation se maneja automáticamente por el RootNavigator
+        // cuando el estado de auth cambia
+      } else {
+        Alert.alert(
+          'Error de Login',
+          'Usuario o contraseña incorrectos. Intenta nuevamente.',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Ocurrió un error inesperado. Verifica tu conexión.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fillTestCredentials = () => {
+    setFormData({
+      username: 'visitador1',
+      password: '123456'
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.surface.primary} />
       
-      <Header.Auth title="Iniciar Sesión" />
-      
-      <KeyboardAvoidingView 
-        style={styles.content}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+      <KeyboardAvoidingView style={styles.keyboardContainer} behavior="padding">
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Logo Section */}
-          <View style={styles.logoSection}>
-            <Text style={styles.logoIcon}>🏥</Text>
-            <Text style={styles.logoText}>VisitaMed</Text>
-            <Text style={styles.welcomeText}>
-              Bienvenido de vuelta
+          {/* Header Section */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Text style={styles.logoIcon}>🏥</Text>
+            </View>
+            <Text style={styles.title}>Visitadores Médicos</Text>
+            <Text style={styles.subtitle}>
+              Inicia sesión para gestionar tus visitas médicas
             </Text>
           </View>
-          
+
           {/* Login Form */}
-          <Card style={styles.formCard} padding="large">
-            <View style={styles.form}>
-              <Input
-                label="Usuario"
-                placeholder="Ingresa tu usuario"
-                value={formData.username}
-                onChangeText={(value) => handleInputChange('username', value)}
-                error={formErrors.username}
-                autoCapitalize="none"
-                autoCorrect={false}
-                leftIcon={<Text style={styles.inputIcon}>👤</Text>}
-              />
-              
-              <Input
-                label="Contraseña"
-                placeholder="Ingresa tu contraseña"
-                value={formData.password}
-                onChangeText={(value) => handleInputChange('password', value)}
-                error={formErrors.password}
-                secureTextEntry
-                leftIcon={<Text style={styles.inputIcon}>🔒</Text>}
-              />
-              
-              {error && (
-                <Text style={styles.errorText}>
-                  {error}
-                </Text>
-              )}
-              
+          <Card variant="elevated" padding="lg" style={styles.formCard}>
+            <Text style={styles.formTitle}>Iniciar Sesión</Text>
+            
+            <Input
+              label="Usuario"
+              placeholder="Ingresa tu usuario"
+              value={formData.username}
+              onChangeText={(value) => handleInputChange('username', value)}
+              error={errors.username}
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
+
+            <Input
+              label="Contraseña"
+              placeholder="Ingresa tu contraseña"
+              value={formData.password}
+              onChangeText={(value) => handleInputChange('password', value)}
+              error={errors.password}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
+
+            <View style={styles.buttonContainer}>
               <Button
-                title={isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                variant="primary"
+                size="lg"
                 onPress={handleLogin}
-                loading={isLoading}
-                disabled={isLoading}
+                loading={loading}
+                disabled={loading}
                 style={styles.loginButton}
-                fullWidth
-              />
+              >
+                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              </Button>
+
+              {/* Test Credentials Button - Solo para desarrollo */}
+              <Button
+                variant="ghost"
+                size="md"
+                onPress={fillTestCredentials}
+                disabled={loading}
+                style={styles.testButton}
+              >
+                Usar credenciales de prueba
+              </Button>
             </View>
           </Card>
-          
-          {/* Demo Credentials Info */}
-          <Card style={styles.demoCard} variant="filled" padding="medium">
-            <Text style={styles.demoTitle}>🧪 Credenciales de prueba:</Text>
-            <Text style={styles.demoText}>
-              <Text style={styles.demoLabel}>Usuario:</Text> visitador1{'\n'}
-              <Text style={styles.demoLabel}>Contraseña:</Text> 123456
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Sistema de gestión médica profesional
             </Text>
-          </Card>
+            <Text style={styles.versionText}>
+              v1.0.0
+            </Text>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -174,93 +181,80 @@ const LoginScreen = () => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: theme.colors.surface.secondary,
   },
-  
-  content: {
+  keyboardContainer: {
     flex: 1,
   },
-  
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing[5],
+    paddingVertical: theme.spacing[8],
   },
-  
-  logoSection: {
+  header: {
     alignItems: 'center',
-    marginBottom: spacing.xl * 2,
+    marginBottom: theme.spacing[10],
   },
-  
+  logoContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: theme.colors.primary[500],
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing[6],
+    ...theme.shadows.lg,
+  },
   logoIcon: {
-    fontSize: 60,
-    marginBottom: spacing.md,
-  },
-  
-  logoText: {
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
-    fontWeight: 'bold',
-    marginBottom: spacing.sm,
-  },
-  
-  welcomeText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+    fontSize: 36,
     textAlign: 'center',
   },
-  
+  title: {
+    ...theme.typography.styles.h1,
+    textAlign: 'center',
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[3],
+  },
+  subtitle: {
+    ...theme.typography.styles.body,
+    textAlign: 'center',
+    color: theme.colors.text.secondary,
+    maxWidth: 280,
+    lineHeight: 22,
+  },
   formCard: {
-    marginBottom: spacing.xl,
+    marginBottom: theme.spacing[8],
   },
-  
-  form: {
-    gap: spacing.md,
-  },
-  
-  inputIcon: {
-    fontSize: 16,
-    color: colors.text.secondary,
-  },
-  
-  loginButton: {
-    marginTop: spacing.lg,
-  },
-  
-  errorText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.error,
+  formTitle: {
+    ...theme.typography.styles.h3,
     textAlign: 'center',
-    backgroundColor: colors.error + '10',
-    padding: spacing.sm,
-    borderRadius: 8,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[6],
   },
-  
-  demoCard: {
-    marginTop: spacing.lg,
+  buttonContainer: {
+    marginTop: theme.spacing[4],
   },
-  
-  demoTitle: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
-    fontWeight: '600',
+  loginButton: {
+    marginBottom: theme.spacing[4],
   },
-  
-  demoText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
-    lineHeight: 20,
+  testButton: {
+    alignSelf: 'center',
   },
-  
-  demoLabel: {
-    fontWeight: '600',
-    color: colors.text.primary,
+  footer: {
+    alignItems: 'center',
+    paddingTop: theme.spacing[6],
+  },
+  footerText: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.tertiary,
+    textAlign: 'center',
+    marginBottom: theme.spacing[2],
+  },
+  versionText: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.disabled,
+    fontSize: 11,
   },
 };
 

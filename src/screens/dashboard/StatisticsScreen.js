@@ -1,35 +1,89 @@
 // src/screens/dashboard/StatisticsScreen.js
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Components
-import { Card } from '../../components/ui';
+import { Card, Button } from '../../components/ui';
 import { Header } from '../../components/layout';
-
-// Theme
-import { colors, typography, spacing } from '../../theme';
+import { theme } from '../../theme';
 
 const StatisticsScreen = ({ navigation }) => {
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
+
+  const mockData = {
+    visits: 74,
+    doctors: 12,
+    forms: 18,
+    efficiency: 92
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Header.Back 
+      <Header 
         title="Estadísticas"
-        onBackPress={() => navigation.goBack()}
+        subtitle="Análisis de rendimiento"
+        leftIcon={<Text style={styles.backIcon}>←</Text>}
+        onLeftPress={() => navigation.goBack()}
       />
       
-      <ScrollView 
-        style={styles.content}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Card style={styles.placeholderCard} padding="large">
-          <Text style={styles.placeholderIcon}>📊</Text>
-          <Text style={styles.placeholderTitle}>Estadísticas</Text>
-          <Text style={styles.placeholderText}>
-            Pantalla de estadísticas en desarrollo.{'\n'}
-            Aquí se mostrarán gráficos y métricas detalladas.
-          </Text>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {/* Period Selector */}
+        <Card variant="default" padding="md" style={styles.periodCard}>
+          <Text style={styles.cardTitle}>Período</Text>
+          <View style={styles.periodButtons}>
+            {['week', 'month', 'quarter'].map((period) => (
+              <Button
+                key={period}
+                variant={selectedPeriod === period ? 'primary' : 'ghost'}
+                size="sm"
+                onPress={() => setSelectedPeriod(period)}
+                style={styles.periodButton}
+              >
+                {period === 'week' ? 'Semana' : period === 'month' ? 'Mes' : 'Trimestre'}
+              </Button>
+            ))}
+          </View>
+        </Card>
+
+        {/* Stats Overview */}
+        <Card variant="elevated" padding="lg" style={styles.overviewCard}>
+          <Text style={styles.cardTitle}>Resumen General</Text>
+          
+          <View style={styles.overviewGrid}>
+            <View style={styles.overviewItem}>
+              <Text style={styles.overviewNumber}>{mockData.visits}</Text>
+              <Text style={styles.overviewLabel}>Total Visitas</Text>
+            </View>
+            
+            <View style={styles.overviewItem}>
+              <Text style={styles.overviewNumber}>{mockData.doctors}</Text>
+              <Text style={styles.overviewLabel}>Médicos Visitados</Text>
+            </View>
+            
+            <View style={styles.overviewItem}>
+              <Text style={styles.overviewNumber}>{mockData.forms}</Text>
+              <Text style={styles.overviewLabel}>Formularios</Text>
+            </View>
+            
+            <View style={styles.overviewItem}>
+              <Text style={[styles.overviewNumber, { color: theme.colors.secondary[500] }]}>
+                {mockData.efficiency}%
+              </Text>
+              <Text style={styles.overviewLabel}>Eficiencia</Text>
+            </View>
+          </View>
+        </Card>
+
+        {/* Placeholder for Charts */}
+        <Card variant="default" padding="lg" style={styles.chartCard}>
+          <Text style={styles.cardTitle}>Gráfico de Rendimiento</Text>
+          <View style={styles.chartPlaceholder}>
+            <Text style={styles.placeholderText}>
+              📊 Gráfico de visitas por día
+            </Text>
+            <Text style={styles.placeholderSubtext}>
+              Próximamente: Integración con librerías de gráficos
+            </Text>
+          </View>
         </Card>
       </ScrollView>
     </SafeAreaView>
@@ -39,42 +93,81 @@ const StatisticsScreen = ({ navigation }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: theme.colors.surface.secondary,
   },
-  
-  content: {
+  scrollView: {
     flex: 1,
   },
-  
   scrollContent: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
+    paddingHorizontal: theme.spacing[5],
+    paddingVertical: theme.spacing[6],
   },
-  
-  placeholderCard: {
+  backIcon: {
+    fontSize: 20,
+    color: theme.colors.text.primary,
+  },
+  cardTitle: {
+    ...theme.typography.styles.h4,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[4],
+  },
+  periodCard: {
+    marginBottom: theme.spacing[6],
+  },
+  periodButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  periodButton: {
+    flex: 1,
+    marginHorizontal: theme.spacing[1],
+  },
+  overviewCard: {
+    marginBottom: theme.spacing[6],
+  },
+  overviewGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  overviewItem: {
+    width: '48%',
     alignItems: 'center',
-    marginTop: spacing.xl,
+    marginBottom: theme.spacing[4],
   },
-  
-  placeholderIcon: {
-    fontSize: 60,
-    marginBottom: spacing.lg,
+  overviewNumber: {
+    ...theme.typography.styles.h2,
+    color: theme.colors.primary[500],
+    fontWeight: 'bold',
   },
-  
-  placeholderTitle: {
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.semiBold,
-    color: colors.text.primary,
-    fontWeight: '600',
-    marginBottom: spacing.md,
-  },
-  
-  placeholderText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+  overviewLabel: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 22,
+    marginTop: theme.spacing[1],
+  },
+  chartCard: {
+    marginBottom: theme.spacing[6],
+  },
+  chartPlaceholder: {
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.neutral[50],
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 2,
+    borderColor: theme.colors.border.light,
+    borderStyle: 'dashed',
+  },
+  placeholderText: {
+    ...theme.typography.styles.body,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing[2],
+  },
+  placeholderSubtext: {
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.tertiary,
+    textAlign: 'center',
   },
 };
 

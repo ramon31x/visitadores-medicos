@@ -1,159 +1,62 @@
 // src/components/ui/Input/styles.js
-import { StyleSheet } from 'react-native';
-import { colors, typography, spacing } from '../../../theme';
+import { theme } from '../../../theme';
 
-export const styles = StyleSheet.create({
+const styles = {
   container: {
-    marginVertical: spacing.xs,
+    marginBottom: theme.spacing[4],
   },
-  
   label: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
-    fontWeight: '500',
+    ...theme.typography.styles.label,
+    marginBottom: theme.spacing[2],
+    color: theme.colors.text.primary,
   },
-  
-  labelFocused: {
-    color: colors.primary,
-  },
-  
-  labelError: {
-    color: colors.error,
-  },
-  
-  labelDisabled: {
-    color: colors.text.disabled,
-  },
-  
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 8,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: theme.colors.surface.primary,
+    borderWidth: 1.5,
+    borderColor: theme.colors.border.light,
+    borderRadius: theme.borderRadius.component.input,
+    paddingHorizontal: theme.spacing[4],
+    minHeight: 48,
   },
-  
-  // Variants
-  default: {
-    borderColor: colors.border,
+  inputContainerFocused: {
+    borderColor: theme.colors.primary[500],
+    ...theme.shadows.sm,
   },
-  
-  filled: {
-    backgroundColor: colors.background.tertiary,
-    borderColor: 'transparent',
+  inputContainerError: {
+    borderColor: theme.colors.status.error,
   },
-  
-  // Sizes
-  small: {
-    minHeight: 36,
-    paddingHorizontal: spacing.sm,
+  inputContainerDisabled: {
+    backgroundColor: theme.colors.neutral[100],
+    borderColor: theme.colors.border.light,
   },
-  
-  medium: {
-    minHeight: 44,
-    paddingHorizontal: spacing.md,
-  },
-  
-  large: {
-    minHeight: 52,
-    paddingHorizontal: spacing.lg,
-  },
-  
-  // States
-  focused: {
-    borderColor: colors.primary,
-    borderWidth: 2,
-    backgroundColor: colors.white,
-  },
-  
-  error: {
-    borderColor: colors.error,
-    borderWidth: 1,
-  },
-  
-  disabled: {
-    backgroundColor: colors.background.disabled,
-    borderColor: colors.border,
-    opacity: 0.6,
-  },
-  
   input: {
     flex: 1,
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.primary,
-    padding: 0, // Remove default padding
+    ...theme.typography.styles.body,
+    color: theme.colors.text.primary,
+    paddingVertical: theme.spacing[3],
   },
-  
-  // Input sizes
-  smallInput: {
-    fontSize: typography.fontSize.sm,
-  },
-  
-  mediumInput: {
-    fontSize: typography.fontSize.base,
-  },
-  
-  largeInput: {
-    fontSize: typography.fontSize.lg,
-  },
-  
-  multilineInput: {
+  inputMultiline: {
+    minHeight: 80,
+    paddingTop: theme.spacing[3],
     textAlignVertical: 'top',
-    paddingVertical: spacing.sm,
   },
-  
-  inputWithLeftIcon: {
-    marginLeft: spacing.sm,
+  leftIcon: {
+    marginRight: theme.spacing[2],
   },
-  
-  inputWithRightIcon: {
-    marginRight: spacing.sm,
+  rightIcon: {
+    marginLeft: theme.spacing[2],
+    padding: theme.spacing[1],
   },
-  
-  leftIconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 20,
-    height: 20,
-  },
-  
-  rightIconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 24,
-    height: 24,
-  },
-  
-  iconButton: {
-    padding: spacing.xs,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  
-  toggleIcon: {
-    fontSize: 16,
-  },
-  
-  placeholder: {
-    color: colors.text.placeholder,
-  },
-  
-  errorText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.error,
-    marginTop: spacing.xs,
-    marginLeft: spacing.xs,
-  },
-  
   helperText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
-    marginLeft: spacing.xs,
+    ...theme.typography.styles.caption,
+    marginTop: theme.spacing[1],
+    color: theme.colors.text.tertiary,
   },
-});
+  errorText: {
+    color: theme.colors.status.error,
+  },
+};
+
+export default styles;

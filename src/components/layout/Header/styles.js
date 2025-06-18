@@ -1,116 +1,65 @@
 // src/components/layout/Header/styles.js
-import { StyleSheet } from 'react-native';
-import { colors, typography, spacing } from '../../../theme';
+import { StatusBar } from 'react-native';
+import { theme } from '../../../theme';
 
-export const styles = StyleSheet.create({
-  header: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    elevation: 4,
-    shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  
+const styles = {
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    minHeight: 56,
+    minHeight: 44,
   },
-  
-  // Variants
-  default: {
-    backgroundColor: '#FFFFFF',
-  },
-  
-  primary: {
-    backgroundColor: '#007AFF',
-  },
-  
-  auth: {
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 0,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  
-  main: {
-    backgroundColor: '#007AFF',
-  },
-  
-  transparent: {
-    backgroundColor: 'transparent',
-    borderBottomWidth: 0,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  
-  // Action buttons
-  actionButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  
-  // Title section
   titleContainer: {
     flex: 1,
+    marginHorizontal: theme.spacing[4],
     alignItems: 'center',
-    paddingHorizontal: spacing.sm,
   },
-  
   title: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.semiBold,
-    color: colors.text.primary,
-    fontWeight: '600',
-    textAlign: 'left',
-  },
-  
-  titleCentered: {
+    ...theme.typography.styles.h4,
+    color: theme.colors.text.primary,
+    marginBottom: 0,
     textAlign: 'center',
   },
-  
   subtitle: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
-    marginTop: 2,
+    ...theme.typography.styles.caption,
+    color: theme.colors.text.secondary,
+    marginTop: theme.spacing[1],
     textAlign: 'center',
   },
-  
-  // Icons
-  backIcon: {
-    fontSize: 24,
-    color: colors.text.primary,
-    fontWeight: 'bold',
+  iconButton: {
+    padding: theme.spacing[2],
+    borderRadius: theme.borderRadius.md,
+    minWidth: 40,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  
-  menuIcon: {
-    fontSize: 20,
-    color: '#FFFFFF',
-  },
-  
-  notificationIcon: {
-    fontSize: 18,
-    color: '#FFFFFF',
-  },
-  
-  searchIcon: {
-    fontSize: 18,
-    color: colors.text.primary,
-  },
-  
-  filterIcon: {
-    fontSize: 16,
-    color: colors.text.primary,
-  },
-});
+
+  getHeaderStyles: (variant) => {
+    const baseStyle = {
+      paddingHorizontal: theme.spacing[5],
+      paddingTop: StatusBar.currentHeight || theme.spacing[6],
+      paddingBottom: theme.spacing[4],
+      ...theme.shadows.sm,
+    };
+
+    const variantStyles = {
+      default: {
+        backgroundColor: theme.colors.surface.primary,
+      },
+      branded: {
+        backgroundColor: theme.colors.primary[500],
+      },
+      transparent: {
+        backgroundColor: 'transparent',
+      }
+    };
+
+    return {
+      ...baseStyle,
+      ...variantStyles[variant],
+    };
+  }
+};
+
+export default styles;
