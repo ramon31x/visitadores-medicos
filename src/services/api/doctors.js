@@ -1,4 +1,4 @@
-import apiClient from './client';
+/* import apiClient from './client';
 import { endpoints, buildQuery } from './endpoints';
 
 // Obtener lista de médicos de mi ruta
@@ -51,6 +51,42 @@ export const getActiveDoctors = async () => {
     return await getDoctors(filters);
   } catch (error) {
     console.error('Get active doctors error:', error);
+    throw error;
+  }
+}; */
+
+// src/services/api/doctors.js - SERVICIO API MÉDICOS
+import apiClient from './client';
+import { endpoints } from './endpoints';
+
+// Obtener lista de médicos de la ruta del visitador
+export const getDoctors = async (activo = true) => {
+  try {
+    console.log('🏥 Obteniendo lista de médicos...');
+    const response = await apiClient.get(endpoints.doctors.list, {
+      params: { activo }
+    });
+    console.log('✅ Médicos obtenidos:', response);
+    return response;
+  } catch (error) {
+    console.error('❌ Error obteniendo médicos:', error);
+    console.error('❌ Response:', error.response?.data);
+    console.error('❌ Status:', error.response?.status);
+    throw error;
+  }
+};
+
+// Obtener detalle de un médico específico
+export const getDoctorDetail = async (medicoId) => {
+  try {
+    console.log('👨‍⚕️ Obteniendo detalle del médico:', medicoId);
+    const response = await apiClient.get(endpoints.doctors.detail(medicoId));
+    console.log('✅ Detalle médico obtenido:', response);
+    return response;
+  } catch (error) {
+    console.error('❌ Error obteniendo detalle médico:', error);
+    console.error('❌ Response:', error.response?.data);
+    console.error('❌ Status:', error.response?.status);
     throw error;
   }
 };

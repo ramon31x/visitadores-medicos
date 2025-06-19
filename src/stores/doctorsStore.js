@@ -1,10 +1,6 @@
+// src/stores/doctorsStore.js - STORE ACTUALIZADO
 import { create } from 'zustand';
-import { 
-  getDoctors, 
-  getDoctorDetail, 
-  searchDoctors,
-  getActiveDoctors 
-} from '../services/api';
+import { getDoctors, getDoctorDetail } from '../services/api/doctors';
 
 const useDoctorsStore = create((set, get) => ({
   // Estado inicial
@@ -12,105 +8,56 @@ const useDoctorsStore = create((set, get) => ({
   selectedDoctor: null,
   isLoading: false,
   error: null,
-  searchTerm: '',
-  filters: {
-    activo: true,
-  },
+  lastFetch: null,
+  searchQuery: '',
+  showActiveOnly: true,
 
   // Acciones
 
   // Cargar lista de médicos
-  loadDoctors: async (filters = {}) => {
+  loadDoctors: async (forceRefresh = false) => {
+    const { lastFetch, showActiveOnly } = get();
+    
+    // Evitar llamadas innecesarias (caché de 5 minutos)
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    if (!forceRefresh && lastFetch && lastFetch > fiveMinutesAgo) {
+      console.log('📋 Usando médicos del caché');
+      return { success: true };
+    }
+
     try {
       set({ isLoading: true, error: null });
       
-      const mergedFilters = { ...get().filters, ...filters };
-      const doctors = await getDoctors(mergedFilters);
+      const doctors = await getDoctors(showActiveOnly);
       
       set({
         doctors,
-        filters: mergedFilters,
         isLoading: false,
         error: null,
+        lastFetch: Date.now(),
       });
       
-      return { success: true, data: doctors };
+      console.log('✅ Médicos cargados exitosamente:', doctors.length);
+      return { success: true };
     } catch (error) {
-      const errorMessage = error.message || 'Error al cargar médicos';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al cargar médicos';
       set({
         doctors: [],
         isLoading: false,
         error: errorMessage,
       });
       
+      console.error('❌ Error cargando médicos:', errorMessage);
       return { success: false, error: errorMessage };
     }
   },
 
-  // Cargar solo médicos activos
-  loadActiveDoctors: async () => {
+  // Cargar detalle de médico
+  loadDoctorDetail: async (medicoId) => {
     try {
       set({ isLoading: true, error: null });
       
-      const doctors = await getActiveDoctors();
-      
-      set({
-        doctors,
-        filters: { activo: true },
-        isLoading: false,
-        error: null,
-      });
-      
-      return { success: true, data: doctors };
-    } catch (error) {
-      const errorMessage = error.message || 'Error al cargar médicos activos';
-      set({
-        doctors: [],
-        isLoading: false,
-        error: errorMessage,
-      });
-      
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Buscar médicos
-  searchDoctors: async (searchTerm) => {
-    try {
-      set({ isLoading: true, error: null, searchTerm });
-      
-      if (!searchTerm.trim()) {
-        // Si no hay término de búsqueda, cargar todos los activos
-        return await get().loadActiveDoctors();
-      }
-      
-      const doctors = await searchDoctors(searchTerm);
-      
-      set({
-        doctors,
-        isLoading: false,
-        error: null,
-      });
-      
-      return { success: true, data: doctors };
-    } catch (error) {
-      const errorMessage = error.message || 'Error al buscar médicos';
-      set({
-        doctors: [],
-        isLoading: false,
-        error: errorMessage,
-      });
-      
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Obtener detalle de médico
-  loadDoctorDetail: async (doctorId) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const doctor = await getDoctorDetail(doctorId);
+      const doctor = await getDoctorDetail(medicoId);
       
       set({
         selectedDoctor: doctor,
@@ -118,9 +65,10 @@ const useDoctorsStore = create((set, get) => ({
         error: null,
       });
       
-      return { success: true, data: doctor };
+      console.log('✅ Detalle médico cargado:', doctor);
+      return { success: true };
     } catch (error) {
-      const errorMessage = error.message || 'Error al cargar detalle del médico';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al cargar médico';
       set({
         selectedDoctor: null,
         isLoading: false,
@@ -131,47 +79,57 @@ const useDoctorsStore = create((set, get) => ({
     }
   },
 
-  // Seleccionar médico (para navegación)
-  selectDoctor: (doctor) => {
-    set({ selectedDoctor: doctor });
+  // Filtros y búsqueda
+  setSearchQuery: (query) => {
+    set({ searchQuery: query });
   },
 
-  // Limpiar médico seleccionado
+  toggleActiveFilter: () => {
+    const { showActiveOnly } = get();
+    set({ showActiveOnly: !showActiveOnly });
+    // Recargar automáticamente con el nuevo filtro
+    get().loadDoctors(true);
+  },
+
+  // Obtener médicos filtrados
+  getFilteredDoctors: () => {
+    const { doctors, searchQuery } = get();
+    
+    if (!searchQuery.trim()) return doctors;
+    
+    const query = searchQuery.toLowerCase();
+    return doctors.filter(doctor => 
+      doctor.nombre.toLowerCase().includes(query) ||
+      doctor.apellido.toLowerCase().includes(query) ||
+      doctor.cedula.includes(query) ||
+      doctor.email.toLowerCase().includes(query) ||
+      `${doctor.nombre} ${doctor.apellido}`.toLowerCase().includes(query)
+    );
+  },
+
+  // Limpiar estado
   clearSelectedDoctor: () => {
     set({ selectedDoctor: null });
   },
 
-  // Limpiar búsqueda
-  clearSearch: () => {
-    set({ searchTerm: '' });
-    get().loadActiveDoctors();
-  },
-
-  // Limpiar errores
   clearError: () => {
     set({ error: null });
   },
 
-  // Refrescar lista
-  refresh: async () => {
-    const { filters } = get();
-    return await get().loadDoctors(filters);
-  },
-
-  // Helpers/Getters
-  getDoctorById: (id) => {
+  // Helpers
+  getDoctorById: (doctorId) => {
     const { doctors } = get();
-    return doctors.find(doctor => doctor.id === id) || null;
+    return doctors.find(doctor => doctor.id === doctorId) || null;
   },
 
-  getDoctorsCount: () => {
+  getTotalDoctors: () => {
     const { doctors } = get();
     return doctors.length;
   },
 
-  getActiveDoctorsCount: () => {
+  getActiveDoctors: () => {
     const { doctors } = get();
-    return doctors.filter(doctor => doctor.activo).length;
+    return doctors.filter(doctor => doctor.activo);
   },
 }));
 
