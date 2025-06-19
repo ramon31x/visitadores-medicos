@@ -1,100 +1,97 @@
+// src/stores/visitsStore.js - STORE COMPLETO DE VISITAS
 import { create } from 'zustand';
-import { 
-  performVisit, 
-  getPerformedVisits, 
-  getVisitsByDateRange,
-  getTodayVisits,
-  getVisitsByStatus 
-} from '../services/api';
+import { getVisitsHistory, performVisit } from '../services/api/visits';
 
 const useVisitsStore = create((set, get) => ({
   // Estado inicial
   visits: [],
-  todayVisits: [],
   selectedVisit: null,
   isLoading: false,
   error: null,
+  lastFetch: null,
+  
+  // Filtros
   filters: {
     fecha_desde: null,
     fecha_hasta: null,
     estado: null,
   },
+  
+  // Stats calculadas
+  stats: {
+    total: 0,
+    realizadas: 0,
+    pendientes: 0,
+    conFormulario: 0,
+  },
 
   // Acciones
 
-  // Cargar visitas realizadas
-  loadVisits: async (filters = {}) => {
+  // Cargar historial de visitas
+  loadVisits: async (forceRefresh = false) => {
+    const { lastFetch, filters } = get();
+    
+    // Caché de 3 minutos para visitas
+    const threeMinutesAgo = Date.now() - 3 * 60 * 1000;
+    if (!forceRefresh && lastFetch && lastFetch > threeMinutesAgo) {
+      console.log('🏥 Usando visitas del caché');
+      return { success: true };
+    }
+
     try {
       set({ isLoading: true, error: null });
       
-      const mergedFilters = { ...get().filters, ...filters };
-      const visits = await getPerformedVisits(mergedFilters);
+      // Preparar filtros para API (solo enviar los que tienen valor)
+      const apiFilters = {};
+      if (filters.fecha_desde) apiFilters.fecha_desde = filters.fecha_desde;
+      if (filters.fecha_hasta) apiFilters.fecha_hasta = filters.fecha_hasta;
+      if (filters.estado) apiFilters.estado = filters.estado;
+      
+      const visits = await getVisitsHistory(apiFilters);
+      
+      // Calcular estadísticas
+      const stats = get().calculateStats(visits);
       
       set({
         visits,
-        filters: mergedFilters,
+        stats,
         isLoading: false,
         error: null,
+        lastFetch: Date.now(),
       });
       
-      return { success: true, data: visits };
+      console.log('✅ Visitas cargadas exitosamente:', visits.length);
+      return { success: true };
     } catch (error) {
-      const errorMessage = error.message || 'Error al cargar visitas';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al cargar visitas';
       set({
         visits: [],
+        stats: { total: 0, realizadas: 0, pendientes: 0, conFormulario: 0 },
         isLoading: false,
         error: errorMessage,
       });
       
+      console.error('❌ Error cargando visitas:', errorMessage);
       return { success: false, error: errorMessage };
     }
   },
 
-  // Cargar visitas del día
-  loadTodayVisits: async () => {
+  // Realizar nueva visita
+  createVisit: async (visitData) => {
     try {
       set({ isLoading: true, error: null });
       
-      const visits = await getTodayVisits();
+      const newVisit = await performVisit(visitData);
       
-      set({
-        todayVisits: visits,
-        isLoading: false,
-        error: null,
-      });
+      // Recargar la lista después de crear
+      await get().loadVisits(true);
       
-      return { success: true, data: visits };
+      set({ isLoading: false, error: null });
+      
+      console.log('✅ Visita creada exitosamente:', newVisit);
+      return { success: true, visit: newVisit };
     } catch (error) {
-      const errorMessage = error.message || 'Error al cargar visitas del día';
-      set({
-        todayVisits: [],
-        isLoading: false,
-        error: errorMessage,
-      });
-      
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Realizar/registrar visita
-  performVisit: async (visitData) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const result = await performVisit(visitData);
-      
-      // Actualizar listas
-      await get().loadVisits();
-      await get().loadTodayVisits();
-      
-      set({
-        isLoading: false,
-        error: null,
-      });
-      
-      return { success: true, data: result };
-    } catch (error) {
-      const errorMessage = error.message || 'Error al registrar visita';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al realizar visita';
       set({
         isLoading: false,
         error: errorMessage,
@@ -104,137 +101,96 @@ const useVisitsStore = create((set, get) => ({
     }
   },
 
-  // Cargar visitas por rango de fechas
-  loadVisitsByDateRange: async (startDate, endDate) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const visits = await getVisitsByDateRange(startDate, endDate);
-      
-      set({
-        visits,
-        filters: {
-          fecha_desde: startDate,
-          fecha_hasta: endDate,
-          estado: null,
-        },
-        isLoading: false,
-        error: null,
-      });
-      
-      return { success: true, data: visits };
-    } catch (error) {
-      const errorMessage = error.message || 'Error al cargar visitas por fecha';
-      set({
-        visits: [],
-        isLoading: false,
-        error: errorMessage,
-      });
-      
-      return { success: false, error: errorMessage };
-    }
+  // Gestión de filtros
+  setDateFilter: (fecha_desde, fecha_hasta) => {
+    set({ 
+      filters: { 
+        ...get().filters, 
+        fecha_desde, 
+        fecha_hasta 
+      } 
+    });
+    // Auto-recargar con nuevos filtros
+    get().loadVisits(true);
   },
 
-  // Cargar visitas por estado
-  loadVisitsByStatus: async (status) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const visits = await getVisitsByStatus(status);
-      
-      set({
-        visits,
-        filters: {
-          fecha_desde: null,
-          fecha_hasta: null,
-          estado: status,
-        },
-        isLoading: false,
-        error: null,
-      });
-      
-      return { success: true, data: visits };
-    } catch (error) {
-      const errorMessage = error.message || 'Error al cargar visitas por estado';
-      set({
-        visits: [],
-        isLoading: false,
-        error: errorMessage,
-      });
-      
-      return { success: false, error: errorMessage };
-    }
+  setStatusFilter: (estado) => {
+    set({ 
+      filters: { 
+        ...get().filters, 
+        estado 
+      } 
+    });
+    // Auto-recargar con nuevo filtro
+    get().loadVisits(true);
   },
 
-  // Seleccionar visita
-  selectVisit: (visit) => {
-    set({ selectedVisit: visit });
-  },
-
-  // Limpiar visita seleccionada
-  clearSelectedVisit: () => {
-    set({ selectedVisit: null });
-  },
-
-  // Limpiar filtros
   clearFilters: () => {
-    set({
+    set({ 
       filters: {
         fecha_desde: null,
         fecha_hasta: null,
         estado: null,
       }
     });
-    get().loadVisits();
+    // Recargar sin filtros
+    get().loadVisits(true);
   },
 
-  // Limpiar errores
+  // Seleccionar visita
+  setSelectedVisit: (visit) => {
+    set({ selectedVisit: visit });
+  },
+
+  clearSelectedVisit: () => {
+    set({ selectedVisit: null });
+  },
+
+  // Limpiar error
   clearError: () => {
     set({ error: null });
   },
 
-  // Refrescar
-  refresh: async () => {
-    await Promise.all([
-      get().loadVisits(),
-      get().loadTodayVisits(),
-    ]);
+  // Helpers y cálculos
+  calculateStats: (visits) => {
+    const total = visits.length;
+    const realizadas = visits.filter(v => v.estado === 'realizada').length;
+    const pendientes = visits.filter(v => v.estado === 'pendiente').length;
+    const conFormulario = visits.filter(v => v.tiene_formulario).length;
+    
+    return { total, realizadas, pendientes, conFormulario };
   },
 
-  // Helpers/Getters
-  getVisitById: (id) => {
+  getVisitsByDate: (date) => {
     const { visits } = get();
-    return visits.find(visit => visit.id === id) || null;
+    const targetDate = new Date(date).toDateString();
+    return visits.filter(visit => 
+      new Date(visit.fecha_visita).toDateString() === targetDate
+    );
   },
 
-  getTodayVisitsCount: () => {
-    const { todayVisits } = get();
-    return todayVisits.length;
-  },
-
-  getCompletedVisitsCount: () => {
+  getVisitsByDoctor: (doctorId) => {
     const { visits } = get();
-    return visits.filter(visit => visit.estado === 'realizada').length;
+    return visits.filter(visit => visit.medico.id === doctorId);
   },
 
-  getVisitsByStatusCount: (status) => {
-    const { visits } = get();
-    return visits.filter(visit => visit.estado === status).length;
+  // Formateo de fechas para UI
+  formatVisitDate: (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   },
 
-  getVisitsWithFormsCount: () => {
-    const { visits } = get();
-    return visits.filter(visit => visit.tiene_formulario).length;
-  },
-
-  // Estados disponibles para visitas
-  getVisitStatuses: () => {
-    return [
-      { key: 'realizada', label: 'Realizada', color: '#10B981' },
-      { key: 'cancelada', label: 'Cancelada', color: '#EF4444' },
-      { key: 'reprogramada', label: 'Reprogramada', color: '#F59E0B' },
-      { key: 'no_encontrado', label: 'No Encontrado', color: '#6B7280' },
-    ];
+  formatVisitTime: (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   },
 }));
 

@@ -1,80 +1,41 @@
+// src/services/api/visits.js - SERVICIO API VISITAS
 import apiClient from './client';
-import { endpoints, buildQuery } from './endpoints';
+import { endpoints } from './endpoints';
 
-// Realizar/marcar visita como completada
+// Obtener visitas realizadas con filtros
+export const getVisitsHistory = async (filters = {}) => {
+  try {
+    console.log('🏥 Obteniendo historial de visitas...');
+    console.log('🔍 Filtros aplicados:', filters);
+    
+    const response = await apiClient.get(endpoints.visits.list, {
+      params: filters
+    });
+    
+    console.log('✅ Visitas obtenidas:', response.length);
+    return response;
+  } catch (error) {
+    console.error('❌ Error obteniendo visitas:', error);
+    console.error('❌ Response:', error.response?.data);
+    console.error('❌ Status:', error.response?.status);
+    throw error;
+  }
+};
+
+// Realizar una nueva visita
 export const performVisit = async (visitData) => {
   try {
-    const { visita_planificada_id, notas = '', estado = 'realizada' } = visitData;
+    console.log('🏥 Realizando nueva visita...');
+    console.log('📝 Datos de visita:', visitData);
     
-    if (!visita_planificada_id) {
-      throw new Error('ID de visita planificada requerido');
-    }
+    const response = await apiClient.post(endpoints.visits.perform, visitData);
     
-    const payload = {
-      visita_planificada_id,
-      notas,
-      estado,
-    };
-    
-    return await apiClient.post(endpoints.visits.perform, payload);
+    console.log('✅ Visita realizada exitosamente:', response);
+    return response;
   } catch (error) {
-    console.error('Perform visit error:', error);
-    throw new Error(error.response?.data?.message || 'Error al registrar visita');
-  }
-};
-
-// Obtener lista de visitas realizadas
-export const getPerformedVisits = async (filters = {}) => {
-  try {
-    const query = buildQuery(filters);
-    const url = `${endpoints.visits.list}${query}`;
-    
-    return await apiClient.get(url);
-  } catch (error) {
-    console.error('Get performed visits error:', error);
-    throw new Error(error.response?.data?.message || 'Error al obtener visitas realizadas');
-  }
-};
-
-// Obtener visitas por rango de fechas
-export const getVisitsByDateRange = async (startDate, endDate) => {
-  try {
-    const filters = {
-      fecha_desde: startDate,
-      fecha_hasta: endDate,
-    };
-    
-    return await getPerformedVisits(filters);
-  } catch (error) {
-    console.error('Get visits by date range error:', error);
-    throw error;
-  }
-};
-
-// Obtener visitas del día actual
-export const getTodayVisits = async () => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    
-    const filters = {
-      fecha_desde: today,
-      fecha_hasta: today,
-    };
-    
-    return await getPerformedVisits(filters);
-  } catch (error) {
-    console.error('Get today visits error:', error);
-    throw error;
-  }
-};
-
-// Obtener visitas por estado
-export const getVisitsByStatus = async (status) => {
-  try {
-    const filters = { estado: status };
-    return await getPerformedVisits(filters);
-  } catch (error) {
-    console.error('Get visits by status error:', error);
+    console.error('❌ Error realizando visita:', error);
+    console.error('❌ Response:', error.response?.data);
+    console.error('❌ Status:', error.response?.status);
     throw error;
   }
 };
